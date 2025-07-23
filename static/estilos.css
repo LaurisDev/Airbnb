@@ -1,0 +1,15 @@
+
+.search-shadow {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+.property-card:hover {
+    transform: translateY(-4px);
+    transition: transform 0.2s ease;
+}
+.datepicker {
+    z-index: 10000;
+}
+.heart-hover:hover {
+    color: #ff385c;
+}
+
