@@ -10,7 +10,7 @@
 </head>
 <body class="bg-gray-50">
     <!-- Barra de navegación -->
-    <nav class="bg-white shadow-sm py-4 px-6 flex justify-center items-center sticky top-0 z-50">
+    <nav class="bg-white shadow-sm py-4 px-6 flex justify-between items-center sticky top-0 z-50">
         <div class="flex justify-between items-center">
             <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/557a6231-ed8b-4bf0-974e-42b9df811fbe.png" alt="Logo de NeonStay en color rosa y blanco con tipografía moderna" class="h-8">
             <span class="ml-2 text-xl font-bold text-rose-500 hidden md:block">NeonStay</span>
@@ -91,99 +91,43 @@
              <!-- Listado de propiedades -->
     <div class="container mx-auto px-4 mt-12 mb-16">
         <h2 class="text-2xl font-bold text-gray-800 mb-6">Alojamientos recomendados</h2>
-        
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            <!-- Propiedad 1 -->
+            {% for alojamiento in alojamientos %}
             <div class="property-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition duration-300">
                 <div class="relative">
-                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/12890e63-6352-41b4-bef7-3737dbc50dd6.png" alt="Moderno apartamento en Barcelona con vista al mar, terraza acristalada y muebles de diseño" class="w-full h-48 object-cover">
-                    <button class="absolute top-3 right-3 text-gray-400 hover:text-rose-500 heart-hover">
-                        <i class="far fa-heart text-xl"></i>
+                    <img src="{{ alojamiento[3] }}" alt="{{ alojamiento[1] }}" class="w-full h-48 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://i.gifer.com/ZZ5H.gif';this.style.width='64px';this.style.height='64px';this.style.objectFit='contain';">
+                    <p class="text-xs text-gray-400">{{ alojamiento[3] }}</p>
+                    <button class="absolute top-3 right-3 heart-hover">
+                        <i class="far fa-heart text-xl text-gray-400"></i>
                     </button>
                 </div>
                 <div class="p-4">
                     <div class="flex justify-between items-start">
                         <div>
-                            <h3 class="font-bold text-lg">Apartamento moderno en Barcelona</h3>
-                            <p class="text-gray-500">A 5 km del centro</p>
+                            <h3 class="font-bold text-lg">{{ alojamiento[0] }}</h3>
+                            <p class="text-gray-500">{{ alojamiento[1] }}</p>
                         </div>
                         <div class="flex items-center">
                             <i class="fas fa-star text-sm text-rose-500"></i>
-                            <span class="ml-1 text-sm">4.92</span>
+                            <span class="ml-1 text-sm">{{ alojamiento[4] }}</span>
                         </div>
                     </div>
-                    <p class="mt-2 text-gray-700"><span class="font-semibold">€120</span> noche</p>
+                    <p class="mt-2 text-gray-700"><span class="font-semibold">€{{ alojamiento[2] }}</span> noche</p>
                 </div>
             </div>
-            
-            <!-- Propiedad 2 -->
-            <div class="property-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition duration-300">
-                <div class="relative">
-                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/63fd72d5-77a5-4c9c-aba5-e1da1a6226f4.png" alt="Casa rural en los Pirineos con chimenea, estructura de madera y ventanales con vistas a las montañas" class="w-full h-48 object-cover">
-                    <button class="absolute top-3 right-3 text-gray-400 hover:text-rose-500 heart-hover">
-                        <i class="far fa-heart text-xl"></i>
-                    </button>
-                </div>
-                <div class="p-4">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="font-bold text-lg">Cabaña en los Pirineos</h3>
-                            <p class="text-gray-500">Aislamiento total</p>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-star text-sm text-rose-500"></i>
-                            <span class="ml-1 text-sm">4.85</span>
-                        </div>
-                    </div>
-                    <p class="mt-2 text-gray-700"><span class="font-semibold">€95</span> noche</p>
-                </div>
-            </div>
-            
-            <!-- Propiedad 3 -->
-            <div class="property-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition duration-300">
-                <div class="relative">
-                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/defe2e87-4113-449d-9756-14d7dde7b2da.png" alt="Piso en el centro de Madrid con decoración moderna, amplio salón y balcón a la calle principal" class="w-full h-48 object-cover">
-                    <button class="absolute top-3 right-3 text-gray-400 hover:text-rose-500 heart-hover">
-                        <i class="far fa-heart text-xl"></i>
-                    </button>
-                </div>
-                <div class="p-4">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="font-bold text-lg">Piso céntrico en Madrid</h3>
-                            <p class="text-gray-500">En el corazón de la ciudad</p>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-star text-sm text-rose-500"></i>
-                            <span class="ml-1 text-sm">4.78</span>
-                        </div>
-                    </div>
-                    <p class="mt-2 text-gray-700"><span class="font-semibold">€110</span> noche</p>
-                </div>
-            </div>
-            
-            <!-- Propiedad 4 -->
-            <div class="property-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition duration-300">
-                <div class="relative">
-                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/db88b6f5-414b-46f3-9531-d0e395309a09.png" alt="Villa de lujo en Marbella con piscina infinita, jardines tropicales y vista al Mediterráneo al atardecer" class="w-full h-48 object-cover">
-                    <button class="absolute top-3 right-3 text-gray-400 hover:text-rose-500 heart-hover">
-                        <i class="far fa-heart text-xl"></i>
-                    </button>
-                </div>
-                <div class="p-4">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="font-bold text-lg">Villa en Marbella</h3>
-                            <p class="text-gray-500">Con piscina privada</p>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-star text-sm text-rose-500"></i>
-                            <span class="ml-1 text-sm">4.95</span>
-                        </div>
-                    </div>
-                    <p class="mt-2 text-gray-700"><span class="font-semibold">€320</span> noche</p>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
+<script>
+document.querySelectorAll('.heart-hover').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const icon = this.querySelector('i');
+        icon.classList.toggle('fas'); // relleno
+        icon.classList.toggle('far'); // vacío
+        icon.classList.toggle('text-rose-500'); // color rosado
+        icon.classList.toggle('text-gray-400'); // color gris
+    });
+});
+</script>
 </body>
+</html>
