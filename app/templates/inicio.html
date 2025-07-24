@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeonStay - Alojamientos alrededor del mundo</title>
+    <title>Rinconcito - Alojamientos alrededor del mundo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="static/estilos.css">
@@ -12,8 +12,7 @@
     <!-- Barra de navegación -->
     <nav class="bg-white shadow-sm py-4 px-6 flex justify-between items-center sticky top-0 z-50">
         <div class="flex justify-between items-center">
-            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/557a6231-ed8b-4bf0-974e-42b9df811fbe.png" alt="Logo de NeonStay en color rosa y blanco con tipografía moderna" class="h-8">
-            <span class="ml-2 text-xl font-bold text-rose-500 hidden md:block">NeonStay</span>
+            <span class="ml-2 text-xl font-bold text-rose-500 hidden md:block">Rinconcito</span>
         </div>
         <div class="hidden md:flex items-center border border-gray-200 rounded-full py-2 px-4 shadow-sm hover:shadow-md transition duration-200">
                 <div class="border-r border-gray-300 pr-4">
@@ -29,15 +28,10 @@
                     <i class="fas fa-search text-white"></i>
                 </div>
         </div>
-        <div class="flex items-center">
-            <button class="hidden md:block bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-300 rounded-full shadow-sm mr-2">
-                Conviértete en anfitrión
-            </button>
             <div class="flex items-center border border-gray-300 rounded-full p-1 cursor-pointer">
                 <i class="fas fa-bars text-gray-600 px-2"></i>
                 <i class="fas fa-user-circle text-gray-600 text-2xl"></i>
             </div>
-        </div>
     </nav>
 
             <!-- Filtros -->
@@ -98,7 +92,6 @@
                     <img src="{{ alojamiento[3] }}" alt="{{ alojamiento[1] }}" class="w-full h-48 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://i.gifer.com/ZZ5H.gif';this.style.width='64px';this.style.height='64px';this.style.objectFit='contain';">
                     <p class="text-xs text-gray-400">{{ alojamiento[3] }}</p>
                     <button class="absolute top-3 right-3 heart-hover">
-                        <i class="far fa-heart text-xl text-gray-400"></i>
                     </button>
                 </div>
                 <div class="p-4">
