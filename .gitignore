@@ -1,6 +1,8 @@
 __pycache__/
 *.pyc
 *.pyo
-.vscode/
+*.pyd
+*.db
 .env
 .DS_Store
+.vscode/
