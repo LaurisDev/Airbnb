@@ -7,31 +7,37 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="static/estilos.css">
+    <script src="static/funciones.js" defer></script>
 </head>
 <body class="bg-gray-50">
     
     <!-- Barra de navegación -->
-    <nav class="bg-white shadow-sm py-4 px-6 flex justify-between items-center sticky top-0 z-50">
-        <div class="flex justify-between items-center">
-            <span class="ml-2 text-xl font-bold text-rose-500 hidden md:block">Rinconcito</span>
+        <nav class="bg-white shadow-sm py-4 px-6 flex justify-between items-center sticky top-0 z-50">
+            <div class="flex justify-between items-center">
+                <span class="ml-2 text-xl font-bold text-rose-500 hidden md:block">Rinconcito</span>
+            </div>
+    <div class="hidden md:flex items-center border border-gray-200 rounded-full py-2 px-4 shadow-sm hover:shadow-md transition duration-200">
+        <div class="border-r border-gray-300 pr-4">
+            <input type="text" id="location" placeholder="Cualquier lugar" class="outline-none text-sm w-32" required>
         </div>
-        <div class="hidden md:flex items-center border border-gray-200 rounded-full py-2 px-4 shadow-sm hover:shadow-md transition duration-200">
-            <div class="border-r border-gray-300 pr-4">
-                <span class="font-medium">Cualquier lugar</span>
-            </div>
-            <div class="border-r border-gray-300 px-4">
-                <span class="font-medium">Check in</span>
-            </div>
-            <div class="border-r border-gray-300 px-4">
-                <span class="font-medium">Check out</span>
-            </div>
-            <div class="pl-4">
-                <span class="text-gray-500">¿Cuántos?</span>
-            </div>
-            <div class="bg-rose-500 p-2 rounded-full ml-2">
-                <i class="fas fa-search text-white"></i>
-            </div>
+
+        <div class="border-r border-gray-300 px-4 relative">
+                <input type="date" id="checkin" class="text-sm outline-none absolute opacity-0 w-full h-full">
+                <span class="text-sm font-medium cursor-pointer" id="checkin-label">Check-in</span>
         </div>
+        <div class="border-r border-gray-300 px-4 relative">
+                <input type="date" id="checkout" class="text-sm outline-none absolute opacity-0 w-full h-full">
+                <span class="text-sm font-medium cursor-pointer" id="checkout-label">Check-out</span>
+        </div>
+
+        <div class="pl-6">
+            <input type="number" id="guests" placeholder="¿Cuántos?" min="1" class="w-21 outline-none text-sm px-1" required>
+        </div>
+        <button type="submit" id="search-button" class="bg-rose-500 p-2 rounded-full ml-2">
+            <i class="fas fa-search text-white"></i>
+        </button>
+    </div>
+
         <div class="relative flex items-center border border-gray-300 rounded-full p-1 cursor-pointer">
             <i class="fas fa-bars text-gray-600 px-2"></i>
             <i class="fas fa-user-circle text-gray-600 text-2xl" id="user-icon"></i>
