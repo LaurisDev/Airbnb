@@ -78,31 +78,5 @@
             {% endfor %}
         </div>
     </div>
-
-    <script>
-        document.querySelectorAll('.heart-hover').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const icon = this.querySelector('i');
-                icon.classList.toggle('fas'); // relleno
-                icon.classList.toggle('far'); // vacío
-                icon.classList.toggle('text-rose-500'); // color rosado
-                icon.classList.toggle('text-gray-400'); // color gris
-            });
-        });
-
-        const userIcon = document.getElementById('user-icon');
-        const userDropdown = document.getElementById('user-dropdown');
-
-        userIcon.addEventListener('click', () => {
-            userDropdown.classList.toggle('active');
-        });
-
-        // Cerrar el menú si se hace clic fuera de él
-        window.addEventListener('click', (event) => {
-            if (!userIcon.contains(event.target) && !userDropdown.contains(event.target)) {
-                userDropdown.classList.remove('active');
-            }
-        });
-    </script>
 </body>
 </html>
