@@ -6,3 +6,7 @@ def init_routes(app):
     def inicio():
         alojamientos = obtener_alojamientos()
         return render_template("inicio.html", alojamientos=alojamientos)
+
+    @app.route("/registro")
+    def registro():
+        return render_template("registro.html")
