@@ -9,7 +9,10 @@
 .datepicker {
     z-index: 10000;
 }
-.heart-hover:hover {
-    color: #ff385c;
-}
 
+.dropdown {
+    display: none;
+}
+.dropdown.active {
+            display: block;
+}
