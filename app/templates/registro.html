@@ -2,39 +2,59 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro - Rinconcito</title>
+    <title>Registro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="static/estilos.css">
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen">
-    <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
-        <h2 class="text-2xl font-bold text-center text-rose-500 mb-6">Registro</h2>
-        <form action="/registro" method="POST">
+<body class="bg-gray-100 p-6">
+    <div class="max-w-md mx-auto bg-white p-6 rounded-md shadow-md">
+        <h2 class="text-2xl font-bold mb-4 text-center">Registro</h2>
+
+        <!-- FORMULARIO COMIENZA AQUÍ -->
+        <form method="POST" action="{{ url_for('registro') }}">
             <div class="mb-4">
-                <label for="nombre" class="block text-gray-700">Nombres</label>
-                <input type="text" id="nombre" name="nombre" required class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-rose-500" placeholder="Tu nombre">
+                <label for="nombre" class="block text-gray-700">Nombre</label>
+                <input type="text" id="nombre" name="nombre" class="mt-1 block w-full border border-gray-300 rounded-md p-2" value="{{ request.form.nombre }}">
+                {% if 'error_nombre' in get_flashed_messages(with_categories=true)|map(attribute=0) %}
+                    <p class="text-red-500 text-sm mt-1">Debes ingresar tu nombre.</p>
+                {% endif %}
             </div>
+
             <div class="mb-4">
                 <label for="apellidos" class="block text-gray-700">Apellidos</label>
-                <input type="text" id="apellidos" name="apellidos" required class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-rose-500" placeholder="Tus apellidos">
+                <input type="text" id="apellidos" name="apellidos" class="mt-1 block w-full border border-gray-300 rounded-md p-2" value="{{ request.form.apellidos }}">
+                {% if 'error_apellidos' in get_flashed_messages(with_categories=true)|map(attribute=0) %}
+                    <p class="text-red-500 text-sm mt-1">Debes ingresar tus apellidos.</p>
+                {% endif %}
             </div>
+
             <div class="mb-4">
-                <label for="correo" class="block text-gray-700">Correo electrónico</label>
-                <input type="email" id="correo" name="correo" required class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-rose-500" placeholder="Tu correo electrónico">
+                <label for="email" class="block text-gray-700">Correo electrónico</label>
+                <input type="email" id="email" name="email" class="mt-1 block w-full border border-gray-300 rounded-md p-2" value="{{ request.form.email }}">
+                {% if 'error_email' in get_flashed_messages(with_categories=true)|map(attribute=0) %}
+                    <p class="text-red-500 text-sm mt-1">Debes ingresar un email válido, este correo ya existe.</p>
+                {% endif %}
             </div>
+
             <div class="mb-4">
                 <label for="telefono" class="block text-gray-700">Teléfono</label>
-                <input type="tel" id="telefono" name="telefono" required class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-rose-500" placeholder="Tu número de teléfono">
+                <input type="text" id="telefono" name="telefono" class="mt-1 block w-full border border-gray-300 rounded-md p-2" value="{{ request.form.telefono }}">
+                {% if 'error_telefono' in get_flashed_messages(with_categories=true)|map(attribute=0) %}
+                    <p class="text-red-500 text-sm mt-1">Debes ingresar un número de teléfono.</p>
+                {% endif %}
             </div>
+
             <div class="mb-4">
-                <label for="contrasena" class="block text-gray-700">Contraseña</label>
-                <input type="password" id="contrasena" name="contrasena" required class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-rose-500" placeholder="Tu contraseña">
+                <label for="contraseña" class="block text-gray-700">Contraseña</label>
+                <input type="password" id="contraseña" name="contraseña" class="mt-1 block w-full border border-gray-300 rounded-md p-2">
+                {% if 'error_contraseña' in get_flashed_messages(with_categories=true)|map(attribute=0) %}
+                    <p class="text-red-500 text-sm mt-1">Debes ingresar una contraseña.</p>
+                {% endif %}
+            </div> 
+
+            <div class="flex justify-center">
+                <button type="submit" class="bg-rose-500 text-white px-4 py-2 rounded hover:bg-rose-600">Registrarse</button>
             </div>
-            <button type="submit" class="w-full bg-rose-500 text-white font-bold py-2 rounded-md hover:bg-rose-600 transition duration-200">Registrarse</button>
         </form>
-        <p class="mt-4 text-center text-gray-600">¿Ya tienes una cuenta? <a href="/login" class="text-rose-500 hover:underline">Inicia sesión</a></p>
     </div>
 </body>
 </html>
