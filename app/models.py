@@ -17,3 +17,22 @@ def obtener_alojamientos():
     cur.close()
     conn.close()
     return alojamientos
+
+def obtener_alojamientos_filtrados(location, checkin, checkout, guests):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    query = """
+        SELECT titulo, descripcion, precio_por_noche, imagen_principal, puntuacion
+        FROM alojamientos
+        WHERE ubicacion ILIKE %s
+          AND fecha_disponible_desde <= %s
+          AND fecha_disponible_hasta >= %s
+          AND capacidad >= %s
+    """
+    cur.execute(query, (f"%{location}%", checkin, checkout, guests))
+    alojamientos = cur.fetchall()
+    cur.close()
+    conn.close()
+    return alojamientos
+
+
