@@ -12,7 +12,7 @@ def get_db_connection():
 def obtener_alojamientos():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT titulo, descripcion, precio_por_noche, imagen_principal, puntuacion FROM alojamientos")
+    cur.execute("SELECT id, titulo, descripcion, precio_por_noche, imagen_principal, puntuacion FROM alojamientos")
     alojamientos = cur.fetchall()
     cur.close()
     conn.close()
@@ -22,7 +22,7 @@ def obtener_alojamientos_filtrados(location, checkin, checkout, guests):
     conn = get_db_connection()
     cur = conn.cursor()
     query = """
-        SELECT titulo, descripcion, precio_por_noche, imagen_principal, puntuacion
+        SELECT id, titulo, descripcion, precio_por_noche, imagen_principal, puntuacion
         FROM alojamientos
         WHERE ubicacion ILIKE %s
           AND fecha_disponible_desde <= %s
@@ -64,6 +64,20 @@ def verificar_usuario_existente(email):
     cursor.close()
     conn.close()
     return resultado is not None
+
+
+def obtener_alojamiento_por_id(alojamiento_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT id, titulo, descripcion, precio_por_noche, imagen_principal, puntuacion
+        FROM alojamientos 
+        WHERE id = %s
+    """, (alojamiento_id,))
+    alojamiento = cur.fetchone()
+    cur.close()
+    conn.close()
+    return alojamiento
 
 
 

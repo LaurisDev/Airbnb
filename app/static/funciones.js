@@ -13,39 +13,11 @@ const userIcon = document.getElementById('user-icon');
             }
         });
 
-// Función para mostrar el selector de fecha
-document.getElementById('checkin').addEventListener('click', () => {
-    document.getElementById('checkin').showPicker();
-});
-
-document.getElementById('checkout').addEventListener('click', () => {
-    document.getElementById('checkout').showPicker();
-});
+// Función para mostrar el selector de fecha (reemplazada por calendario personalizado)
+// Los calendarios personalizados se inicializan en DOMContentLoaded
 
 
-// Función para manejar la búsqueda de alojamientos
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('search-button').addEventListener('click', async e => {
-        e.preventDefault();
-
-        const fields = ['location', 'checkin', 'checkout', 'guests'];
-        const data = Object.fromEntries(fields.map(id => [id, document.getElementById(id).value]));
-
-        try {
-            const response = await fetch('/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-
-            const results = await response.json();
-            updateSearchResults(results);
-        } catch (err) {
-            console.error('Error al buscar:', err);
-            alert('Ocurrió un error al buscar alojamientos.');
-        }
-    });
-});
+// Función para manejar la búsqueda de alojamientos (movida a DOMContentLoaded)
 
 function updateSearchResults(results) {
     const container = document.querySelector('.grid');
@@ -73,4 +45,42 @@ function updateSearchResults(results) {
                 </div>
             </div>
         `).join('');
+}
+
+// Función para calcular el precio total de la reserva
+function initPriceCalculation(pricePerNight) {
+    const checkinInput = document.getElementById('checkin');
+    const checkoutInput = document.getElementById('checkout');
+    const totalPriceDiv = document.getElementById('total-price');
+    const totalAmount = document.getElementById('total-amount');
+
+    if (!checkinInput || !checkoutInput || !totalPriceDiv || !totalAmount) {
+        return; // Si no estamos en la página de detalles, salir
+    }
+
+    function calculateTotal() {
+        const checkinIso = checkinInput.getAttribute('data-iso-date');
+        const checkoutIso = checkoutInput.getAttribute('data-iso-date');
+        
+        if (checkinIso && checkoutIso) {
+            const checkin = new Date(checkinIso);
+            const checkout = new Date(checkoutIso);
+            
+            if (checkout > checkin) {
+                const diffTime = Math.abs(checkout - checkin);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const total = diffDays * pricePerNight;
+                
+                totalAmount.textContent = '€' + total;
+                totalPriceDiv.classList.remove('hidden');
+            } else {
+                totalPriceDiv.classList.add('hidden');
+            }
+        } else {
+            totalPriceDiv.classList.add('hidden');
+        }
+    }
+
+    checkinInput.addEventListener('change', calculateTotal);
+    checkoutInput.addEventListener('change', calculateTotal);
 }

@@ -10,34 +10,31 @@
     <script src="static/funciones.js" defer></script>
 </head>
 <body class="bg-gray-50">
-    
+
     <!-- Barra de navegación -->
-        <nav class="bg-white shadow-sm py-4 px-6 flex justify-between items-center sticky top-0 z-50">
-            <div class="flex justify-between items-center">
-                <span class="ml-2 text-xl font-bold text-rose-500 hidden md:block">Rinconcito</span>
+    <nav class="bg-white shadow-sm py-4 px-6 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex justify-between items-center">
+            <span class="ml-2 text-xl font-bold text-rose-500 hidden md:block">Rinconcito</span>
+        </div>
+        <div class="hidden md:flex items-center border border-gray-200 rounded-full py-2 px-4 shadow-sm hover:shadow-md transition duration-200">
+            <div class="border-r border-gray-300 pr-4">
+                <input type="text" id="location" placeholder="Cualquier lugar" class="outline-none text-sm w-32" required>
             </div>
-    <div class="hidden md:flex items-center border border-gray-200 rounded-full py-2 px-4 shadow-sm hover:shadow-md transition duration-200">
-        <div class="border-r border-gray-300 pr-4">
-            <input type="text" id="location" placeholder="Cualquier lugar" class="outline-none text-sm w-32" required>
+            <div class="border-r border-gray-300 px-4 relative">
+                    <input type="date" id="checkin" class="text-sm outline-none absolute opacity-0 w-full h-full">
+                    <span class="text-sm font-medium cursor-pointer" id="checkin-label">Check-in</span>
+            </div>
+            <div class="border-r border-gray-300 px-4 relative">
+                    <input type="date" id="checkout" class="text-sm outline-none absolute opacity-0 w-full h-full">
+                    <span class="text-sm font-medium cursor-pointer" id="checkout-label">Check-out</span>
+            </div>
+            <div class="pl-6">
+                <input type="number" id="guests" placeholder="¿Cuántos?" min="1" class="w-21 outline-none text-sm px-1" required>
+            </div>
+            <button type="submit" id="search-button" class="bg-rose-500 p-2 rounded-full ml-2">
+                <i class="fas fa-search text-white"></i>
+            </button>
         </div>
-
-        <div class="border-r border-gray-300 px-4 relative">
-                <input type="date" id="checkin" class="text-sm outline-none absolute opacity-0 w-full h-full">
-                <span class="text-sm font-medium cursor-pointer" id="checkin-label">Check-in</span>
-        </div>
-        <div class="border-r border-gray-300 px-4 relative">
-                <input type="date" id="checkout" class="text-sm outline-none absolute opacity-0 w-full h-full">
-                <span class="text-sm font-medium cursor-pointer" id="checkout-label">Check-out</span>
-        </div>
-
-        <div class="pl-6">
-            <input type="number" id="guests" placeholder="¿Cuántos?" min="1" class="w-21 outline-none text-sm px-1" required>
-        </div>
-        <button type="submit" id="search-button" class="bg-rose-500 p-2 rounded-full ml-2">
-            <i class="fas fa-search text-white"></i>
-        </button>
-    </div>
-
         <div class="relative flex items-center border border-gray-300 rounded-full p-1 cursor-pointer">
             <i class="fas fa-bars text-gray-600 px-2"></i>
             <i class="fas fa-user-circle text-gray-600 text-2xl" id="user-icon"></i>
@@ -52,29 +49,30 @@
 
     <!-- Listado de propiedades -->
     <div class="container mx-auto px-4 mt-12 mb-16">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">Alojamientos recomendados</h2>
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Alojamientos Recomendados</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {% for alojamiento in alojamientos %}
-            <div class="property-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition duration-300">
-                <div class="relative">
-                    <img src="{{ alojamiento[3] }}" alt="{{ alojamiento[1] }}" class="w-full h-48 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://i.gifer.com/ZZ5H.gif';this.style.width='64px';this.style.height='64px';this.style.objectFit='contain';">
-                    <button class="absolute top-3 right-3 heart-hover">
-                    </button>
-                </div>
-                <div class="p-4">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="font-bold text-lg">{{ alojamiento[0] }}</h3>
-                            <p class="text-gray-500">{{ alojamiento[1] }}</p>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-star text-sm text-rose-500"></i>
-                            <span class="ml-1 text-sm">{{ alojamiento[4] }}</span>
-                        </div>
+            <a href="/alojamiento/{{ alojamiento[0] }}" class="block">
+                <div class="property-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition duration-300 cursor-pointer">
+                    <div class="relative">
+                        <img src="{{ alojamiento[4] }}" alt="{{ alojamiento[1] }}" class="w-full h-48 object-cover">
+                        <button class="absolute top-3 right-3 heart-hover" onclick="event.preventDefault(); event.stopPropagation();"></button>
                     </div>
-                    <p class="mt-2 text-gray-700"><span class="font-semibold">€{{ alojamiento[2] }}</span> noche</p>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-lg">{{ alojamiento[1] }}</h3>
+                                <p class="text-gray-500">{{ alojamiento[2] }}</p>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-sm text-rose-500"></i>
+                                <span class="ml-1 text-sm">{{ alojamiento[5] }}</span>
+                            </div>
+                        </div>
+                        <p class="mt-2 text-gray-700"><span class="font-semibold">€{{ alojamiento[3] }}</span> noche</p>
+                    </div>
                 </div>
-            </div>
+            </a>
             {% endfor %}
         </div>
     </div>

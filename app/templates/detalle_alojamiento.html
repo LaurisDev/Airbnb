@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ alojamiento[1] }} - Rinconcito</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="static/estilos.css">
+</head>
+<body class="bg-gray-50">
+
+    <!-- Barra de navegación -->
+    <nav class="bg-white shadow-sm py-4 px-6 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center">
+            <a href="/" class="text-xl font-bold text-rose-500">Rinconcito</a>
+        </div>
+        <div class="flex items-center space-x-4">
+            <a href="/" class="text-gray-600 hover:text-rose-500 transition duration-200">
+                <i class="fas fa-arrow-left mr-2"></i>Volver
+            </a>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Columna izquierda - Imagen y descripción -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Imagen principal -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <img src="{{ alojamiento[4] }}" alt="{{ alojamiento[1] }}" class="w-full h-[500px] object-cover">
+                </div>
+
+                <!-- Información del alojamiento -->
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <div class="mb-4">
+                        <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ alojamiento[1] }}</h1>
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-rose-500 mr-1"></i>
+                            <span class="font-medium">{{ alojamiento[5] }}</span>
+                            <span class="text-gray-500 ml-2">• Excelente ubicación</span>
+                        </div>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Descripción</h2>
+                        <p class="text-gray-700 leading-relaxed">{{ alojamiento[2] }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna derecha - Formulario de reserva -->
+            <div class="lg:col-span-1 lg:sticky lg:top-24">
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-5 max-w-sm mx-auto lg:mx-0">
+                    <div class="mb-4">
+                        <div class="flex items-baseline gap-1">
+                            <p class="text-2xl font-bold text-gray-800">€{{ alojamiento[3] }}</p>
+                            <p class="text-gray-600">noche</p>
+                        </div>
+                        <div id="total-price" class="hidden mt-2 pt-2 border-t border-gray-200">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-700">Total:</span>
+                                <span class="text-lg font-semibold text-gray-800" id="total-amount">€0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulario de reserva -->
+                    <form class="space-y-4">
+                        <!-- Fechas -->
+                        <div class="border border-gray-300 rounded-lg overflow-hidden">
+                            <div class="grid grid-cols-2">
+                                <div class="border-r border-gray-300">
+                                    <label for="checkin" class="block text-xs font-medium text-gray-700 px-3 pt-3">Check-in</label>
+                                    <input type="date" id="checkin" name="checkin" required 
+                                           class="w-full px-3 pb-3 text-sm border-0 focus:ring-0 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label for="checkout" class="block text-xs font-medium text-gray-700 px-3 pt-3">Check-out</label>
+                                    <input type="date" id="checkout" name="checkout" required 
+                                           class="w-full px-3 pb-3 text-sm border-0 focus:ring-0 focus:outline-none">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Huéspedes -->
+                        <div class="border border-gray-300 rounded-lg">
+                            <label for="guests" class="block text-xs font-medium text-gray-700 px-3 pt-3">Huéspedes</label>
+                            <select id="guests" name="guests" required 
+                                    class="w-full px-3 pb-3 text-sm border-0 focus:ring-0 focus:outline-none bg-transparent">
+                                <option value="">¿Cuántos?</option>
+                                <option value="1">1 Huésped</option>
+                                <option value="2">2 Huéspedes</option>
+                                <option value="3">3 Huéspedes</option>
+                                <option value="4">4 Huéspedes</option>
+                                <option value="5">5 Huéspedes</option>
+                                <option value="6">6 Huéspedes</option>
+                                <option value="7">7 Huéspedes</option>
+                                <option value="8">8 Huéspedes</option>
+                                <option value="9">9 Huéspedes</option>
+                                <option value="10">10 Huéspedes</option>
+                            </select>
+                        </div>
+
+                        <!-- Botón de reserva -->
+                        <button type="submit" class="w-full bg-rose-500 text-white py-4 px-4 rounded-lg font-semibold text-base hover:bg-rose-600 transition duration-200">
+                            Reservar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inicializar el cálculo del precio total
+        document.addEventListener('DOMContentLoaded', function() {
+            initPriceCalculation(parseInt('{{ alojamiento[3] }}'));
+        });
+    </script>
+</body>
+</html> 

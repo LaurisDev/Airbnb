@@ -1,5 +1,5 @@
 from flask import render_template, request, jsonify, redirect, url_for, flash
-from app.models import obtener_alojamientos, obtener_alojamientos_filtrados, registrar_usuario, verificar_usuario_existente
+from app.models import obtener_alojamientos, obtener_alojamientos_filtrados, registrar_usuario, verificar_usuario_existente, obtener_alojamiento_por_id
 
 def init_routes(app):
     
@@ -74,4 +74,12 @@ def init_routes(app):
     @app.route("/login")
     def login():
         return render_template("login.html")
+
+    @app.route("/alojamiento/<int:alojamiento_id>")
+    def detalle_alojamiento(alojamiento_id):
+        alojamiento = obtener_alojamiento_por_id(alojamiento_id)
+        if alojamiento is None:
+            flash("Alojamiento no encontrado", "error")
+            return redirect(url_for('inicio'))
+        return render_template("detalle_alojamiento.html", alojamiento=alojamiento)
 
