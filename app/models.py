@@ -36,8 +36,6 @@ def obtener_alojamientos_filtrados(location, checkin, checkout, guests):
     return alojamientos
 
 
-# ----------------------------------------------------------------------------------------------------
-#PARTE DEL REGISTRO DE USUARIOS
 def registrar_usuario (nombre, apellidos, email, telefono, contraseña):
     conn = get_db_connection()
     cur = conn.cursor()
@@ -53,9 +51,7 @@ def registrar_usuario (nombre, apellidos, email, telefono, contraseña):
     finally:
         cur.close()
         conn.close()
-# ----------------------------------------------------------------------------------------------------
 
-#para el registro necesitamos verificar si el usuario ya existe
 def verificar_usuario_existente(email):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -78,6 +74,7 @@ def obtener_alojamiento_por_id(alojamiento_id):
     cur.close()
     conn.close()
     return alojamiento
+
 
 
 

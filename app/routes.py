@@ -6,7 +6,7 @@ def init_routes(app):
     @app.route("/", methods=["GET", "POST"])
     def inicio():
         if request.method == "POST":
-            if request.is_json:
+            if request.get_json():
                 data = request.get_json()
                 location = data.get("location")
                 checkin = data.get("checkin")
@@ -19,6 +19,7 @@ def init_routes(app):
                 guests = request.form.get("guests")
 
             alojamientos = obtener_alojamientos_filtrados(location, checkin, checkout, guests)
+            return jsonify(alojamientos)
         else:
             alojamientos = obtener_alojamientos()
             
@@ -82,4 +83,5 @@ def init_routes(app):
             flash("Alojamiento no encontrado", "error")
             return redirect(url_for('inicio'))
         return render_template("detalle_alojamiento.html", alojamiento=alojamiento)
-
+   
+  
