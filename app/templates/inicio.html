@@ -10,7 +10,7 @@
     <script src="static/funciones.js" defer></script>
 </head>
 <body class="bg-gray-50">
-
+    
     <!-- Barra de navegación -->
     <nav class="bg-white shadow-sm py-4 px-6 flex justify-between items-center sticky top-0 z-50">
         <div class="flex justify-between items-center">
@@ -38,13 +38,20 @@
         <div class="relative flex items-center border border-gray-300 rounded-full p-1 cursor-pointer">
             <i class="fas fa-bars text-gray-600 px-2"></i>
             <i class="fas fa-user-circle text-gray-600 text-2xl" id="user-icon"></i>
-            <div class="dropdown absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10" id="user-dropdown">
-                <div class="py-2">
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-rose-100 transition duration-200">Iniciar sesión</a>
-                    <a href="/registro" class="block px-4 py-2 text-gray-800 hover:bg-rose-100 transition duration-200">Registrarse</a>
-                </div>
+
+        <!--esto es para que cambie el contenido del dropdown dependiendo si el usuario está logueado o no------------------------------------ -->
+        <div class="dropdown absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10" id="user-dropdown">
+            <div class="py-2">
+                {% if session.usuario_email %}
+                    <p class="px-4 py-2 text-gray-800">Bienvenido, <strong>{{ session.usuario_email }}</strong></p>
+                    <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-gray-800 hover:bg-rose-100 transition duration-200">Cerrar sesión</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="block px-4 py-2 text-gray-800 hover:bg-rose-100 transition duration-200">Iniciar sesión</a>
+                    <a href="{{ url_for('registro') }}" class="block px-4 py-2 text-gray-800 hover:bg-rose-100 transition duration-200">Registrarse</a>
+                {% endif %}
             </div>
         </div>
+        <!-- fin del dropdown------------------------------------------------------------------------------------------------------------- -->
     </nav>
 
     <!-- Listado de propiedades -->

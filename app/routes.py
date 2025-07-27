@@ -1,5 +1,6 @@
-from flask import render_template, request, jsonify, redirect, url_for, flash
+from flask import render_template, request, jsonify, redirect, url_for, flash, session
 from app.models import obtener_alojamientos, obtener_alojamientos_filtrados, registrar_usuario, verificar_usuario_existente, obtener_alojamiento_por_id
+from app.models import get_db_connection
 
 def init_routes(app):
     
@@ -72,10 +73,47 @@ def init_routes(app):
         return render_template("registro.html")
 #----------------------------------------------------------------------------------------------------
 #LOGIN DE USUARIOS
-    @app.route("/login")
+    @app.route("/login", methods=["GET", "POST"])
     def login():
+        if request.method == 'POST':
+            email = request.form.get("email", "").strip()
+            contraseña = request.form.get("contraseña", "").strip()
+
+            if not email or not contraseña:
+                flash("Debes ingresar tu email y contraseña.", "error")
+                return render_template("login.html")
+
+            try:
+                conn = get_db_connection()
+                cur = conn.cursor()
+                cur.execute("SELECT * FROM usuarios WHERE email = %s AND contraseña = %s", (email, contraseña))
+                user = cur.fetchone()
+                cur.close()
+                conn.close()
+            except Exception as e:
+                flash("Error en la base de datos.", "error")
+                return render_template("login.html")
+
+            if not user:
+                flash("Email o contraseña incorrectos.", "error")
+                return redirect(url_for("login"))
+
+            #  guardar al usuario en sesión 
+            session['usuario_email'] = user[3]
+
+            flash("Inicio de sesión exitoso.", "success")
+            return redirect(url_for('inicio'))
+
         return render_template("login.html")
 
+
+    @app.route("/logout")
+    def logout():
+        session.clear()
+        flash("Has cerrado sesión correctamente.", "success")
+        return redirect(url_for("login"))
+        
+#----------------------------------------------------------------------------------------------------
     @app.route("/alojamiento/<int:alojamiento_id>")
     def detalle_alojamiento(alojamiento_id):
         alojamiento = obtener_alojamiento_por_id(alojamiento_id)
