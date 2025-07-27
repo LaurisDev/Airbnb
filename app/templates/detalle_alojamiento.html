@@ -37,6 +37,8 @@
                 <div class="bg-white rounded-xl shadow-lg p-8">
                     <div class="mb-4">
                         <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ alojamiento[1] }}</h1>
+                
+
                         <div class="flex items-center">
                             <i class="fas fa-star text-rose-500 mr-1"></i>
                             <span class="font-medium">{{ alojamiento[5] }}</span>
@@ -75,12 +77,12 @@
                             <div class="grid grid-cols-2">
                                 <div class="border-r border-gray-300">
                                     <label for="checkin" class="block text-xs font-medium text-gray-700 px-3 pt-3">Check-in</label>
-                                    <input type="date" id="checkin" name="checkin" required 
+                                    <input type="date" id="checkin" name="checkin" required value="{{ checkin }}"
                                            class="w-full px-3 pb-3 text-sm border-0 focus:ring-0 focus:outline-none">
                                 </div>
                                 <div>
                                     <label for="checkout" class="block text-xs font-medium text-gray-700 px-3 pt-3">Check-out</label>
-                                    <input type="date" id="checkout" name="checkout" required 
+                                    <input type="date" id="checkout" name="checkout" required value="{{ checkout }}"
                                            class="w-full px-3 pb-3 text-sm border-0 focus:ring-0 focus:outline-none">
                                 </div>
                             </div>
@@ -89,20 +91,15 @@
                         <!-- Huéspedes -->
                         <div class="border border-gray-300 rounded-lg">
                             <label for="guests" class="block text-xs font-medium text-gray-700 px-3 pt-3">Huéspedes</label>
-                            <select id="guests" name="guests" required 
-                                    class="w-full px-3 pb-3 text-sm border-0 focus:ring-0 focus:outline-none bg-transparent">
+                            <select id="guests" name="guests" required class="w-full px-3 pb-3 text-sm border-0 focus:ring-0 focus:outline-none bg-transparent">
                                 <option value="">¿Cuántos?</option>
-                                <option value="1">1 Huésped</option>
-                                <option value="2">2 Huéspedes</option>
-                                <option value="3">3 Huéspedes</option>
-                                <option value="4">4 Huéspedes</option>
-                                <option value="5">5 Huéspedes</option>
-                                <option value="6">6 Huéspedes</option>
-                                <option value="7">7 Huéspedes</option>
-                                <option value="8">8 Huéspedes</option>
-                                <option value="9">9 Huéspedes</option>
-                                <option value="10">10 Huéspedes</option>
+                                {% for i in range(1, 11) %}
+                                <option value="{{ i }}" {% if guests == i|string %}selected{% endif %}>
+                                    {{ i }} Huésped{% if i > 1 %}es{% endif %}
+                                </option>
+                                {% endfor %}
                             </select>
+
                         </div>
 
                         <!-- Botón de reserva -->

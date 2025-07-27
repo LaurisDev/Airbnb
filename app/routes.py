@@ -116,10 +116,14 @@ def init_routes(app):
 #----------------------------------------------------------------------------------------------------
     @app.route("/alojamiento/<int:alojamiento_id>")
     def detalle_alojamiento(alojamiento_id):
+        checkin = request.args.get("checkin", "")
+        checkout = request.args.get("checkout", "")
+        guests = request.args.get("guests", "")
+
         alojamiento = obtener_alojamiento_por_id(alojamiento_id)
         if alojamiento is None:
             flash("Alojamiento no encontrado", "error")
             return redirect(url_for('inicio'))
-        return render_template("detalle_alojamiento.html", alojamiento=alojamiento)
+        return render_template("detalle_alojamiento.html", alojamiento=alojamiento, checkin=checkin, checkout=checkout, guests=guests)
    
   

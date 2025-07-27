@@ -60,7 +60,8 @@ function updateSearchResults(results) {
         ? '<p>No se encontraron alojamientos con esos criterios.</p>'
         : results.map(a => `
             <div class="property-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition duration-300">
-                <a href="/alojamiento/${a[0]}">
+                <a href="/alojamiento/${a[0]}?checkin=${encodeURIComponent(document.getElementById('checkin').value)}&checkout=${encodeURIComponent(document.getElementById('checkout').value)}&guests=${encodeURIComponent(document.getElementById('guests').value)}">
+
                <div class="relative">
                     <img src="${a[4]}" alt="${a[1]}" class="w-full h-48 object-cover" loading="lazy"
                         onerror="this.onerror=null;this.src='https://i.gifer.com/ZZ5H.gif';this.style.width='64px';this.style.height='64px';this.style.objectFit='contain';">
