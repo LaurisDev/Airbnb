@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-md mx-auto bg-white p-6 rounded-md shadow-md">
+        <h2 class="text-2xl font-bold mb-4 text-center">Iniciar Sesión</h2>
+
+        <!-- FORMULARIO COMIENZA AQUÍ -->
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="mb-4">
+                <label for="email" class="block text-gray-700">Correo electrónico</label>
+                <input type="email" id="email" name="email" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                {% if 'error_email' in get_flashed_messages(with_categories=true)|map(attribute=0) %}
+                    <p class="text-red-500 text-sm mt-1">Correo electrónico no válido o no registrado.</p>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label for="contraseña" class="block text-gray-700">Contraseña</label>
+                <input type="password" id="contraseña" name="contraseña" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
+                {% if 'error_contraseña' in get_flashed_messages(with_categories=true)|map(attribute=0) %}
+                    <p class="text-red-500 text-sm mt-1">Contraseña incorrecta.</p>
+                {% endif %}
+            </div>
+
+            <div class="flex justify-center">
+                <button type="submit" class="bg-rose-500 text-white px-4 py-2 rounded hover:bg-rose-600">Iniciar Sesión</button>
+            </div>
+        </form>
+
+        <div class="mt-4 text-center">
+            <p class="text-gray-600">¿No tienes una cuenta? <a href="{{ url_for('registro') }}" class="text-rose-500 hover:underline">Regístrate aquí</a></p>
+        </div>
+    </div>
+</body>
+</html>
