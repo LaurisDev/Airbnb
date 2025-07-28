@@ -118,6 +118,52 @@ def verificar_resena_existente(usuario_id, alojamiento_id):
     conn.close()
     return reseña is not None
 
+def obtener_usuario_por_email(email):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM usuarios WHERE email = %s", (email,))
+    usuario = cur.fetchone()
+    cur.close()
+    conn.close()
+    return usuario
+
+def crear_reserva(usuario_id, alojamiento_id, fecha_inicio, fecha_fin, total):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("""
+            INSERT INTO reservas (usuario_id, alojamiento_id, fecha_inicio, fecha_fin, total, estado)
+            VALUES (%s, %s, %s, %s, %s, 'pendiente')
+            RETURNING id
+        """, (usuario_id, alojamiento_id, fecha_inicio, fecha_fin, total))
+        reserva_id = cur.fetchone()[0]
+        conn.commit()
+        return reserva_id
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        cur.close()
+        conn.close()
+
+def verificar_disponibilidad(alojamiento_id, fecha_inicio, fecha_fin):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT COUNT(*) FROM reservas 
+        WHERE alojamiento_id = %s 
+        AND estado != 'cancelada'
+        AND (
+            (fecha_inicio <= %s AND fecha_fin >= %s) OR
+            (fecha_inicio <= %s AND fecha_fin >= %s) OR
+            (fecha_inicio >= %s AND fecha_fin <= %s)
+        )
+    """, (alojamiento_id, fecha_inicio, fecha_inicio, fecha_fin, fecha_fin, fecha_inicio, fecha_fin))
+    count = cur.fetchone()[0]
+    cur.close()
+    conn.close()
+    return count == 0
+
 
 
 

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de Reserva - Rinconcito</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="static/estilos.css">
+</head>
+<body class="bg-gray-50">
+
+    <!-- Barra de navegación -->
+    <nav class="bg-white shadow-sm py-4 px-6 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center">
+            <a href="/" class="text-xl font-bold text-rose-500">Rinconcito</a>
+        </div>
+        <div class="flex items-center space-x-4">
+            <a href="/" class="text-gray-600 hover:text-rose-500 transition duration-200">
+                <i class="fas fa-home mr-2"></i>Inicio
+            </a>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="container mx-auto px-4 py-8 max-w-2xl">
+        <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+            <!-- Icono de éxito -->
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-check text-green-500 text-3xl"></i>
+            </div>
+
+            <!-- Título -->
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">¡Reserva Confirmada!</h1>
+            <p class="text-gray-600 mb-8">Tu reserva ha sido procesada exitosamente</p>
+
+            <!-- Número de reserva -->
+            <div class="bg-gray-50 rounded-lg p-6 mb-8">
+                <p class="text-sm text-gray-600 mb-2">Número de reserva</p>
+                <p class="text-2xl font-bold text-rose-500">#{{ reserva_id }}</p>
+            </div>
+
+            <!-- Información de la reserva -->
+            <div class="text-left space-y-4 mb-8">
+                <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                    <span class="text-gray-600">Alojamiento:</span>
+                    <span class="font-medium">{{ alojamiento[1] }}</span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                    <span class="text-gray-600">Check-in:</span>
+                    <span class="font-medium">{{ checkin }}</span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                    <span class="text-gray-600">Check-out:</span>
+                    <span class="font-medium">{{ checkout }}</span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                    <span class="text-gray-600">Huéspedes:</span>
+                    <span class="font-medium">{{ guests }} persona{% if guests|int > 1 %}s{% endif %}</span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                    <span class="text-gray-600">Noches:</span>
+                    <span class="font-medium">{{ noches }} noche{% if noches > 1 %}s{% endif %}</span>
+                </div>
+                <div class="flex justify-between items-center py-3">
+                    <span class="text-lg font-semibold text-gray-800">Total pagado:</span>
+                    <span class="text-2xl font-bold text-rose-500">€{{ precio_total }}</span>
+                </div>
+            </div>
+
+            <!-- Mensaje de confirmación -->
+            <div class="bg-blue-50 rounded-lg p-6 mb-8">
+                <div class="flex items-start">
+                    <i class="fas fa-envelope text-blue-500 mr-3 mt-1"></i>
+                    <div class="text-left">
+                        <h3 class="font-semibold text-blue-800 mb-2">Confirmación enviada</h3>
+                        <p class="text-blue-700 text-sm">Te hemos enviado un email con todos los detalles de tu reserva y las instrucciones para el check-in.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información adicional -->
+            <div class="bg-yellow-50 rounded-lg p-6 mb-8">
+                <div class="flex items-start">
+                    <i class="fas fa-info-circle text-yellow-500 mr-3 mt-1"></i>
+                    <div class="text-left">
+                        <h3 class="font-semibold text-yellow-800 mb-2">Próximos pasos</h3>
+                        <ul class="text-yellow-700 text-sm space-y-1">
+                            <li>• Revisa tu email para los detalles completos</li>
+                            <li>• Guarda el número de reserva para futuras consultas</li>
+                            <li>• Contacta al anfitrión 24h antes del check-in</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="flex flex-col sm:flex-row gap-4">
+                <a href="/" class="flex-1 bg-rose-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-rose-600 transition duration-200">
+                    <i class="fas fa-home mr-2"></i>Volver al Inicio
+                </a>
+                <button onclick="window.print()" class="flex-1 bg-gray-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-600 transition duration-200">
+                    <i class="fas fa-print mr-2"></i>Imprimir
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html> 

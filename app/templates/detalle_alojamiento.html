@@ -161,7 +161,7 @@
                     </div>
 
                     <!-- Formulario de reserva -->
-                    <form class="space-y-4">
+                    <form action="{{ url_for('resumen_reserva', alojamiento_id=alojamiento[0]) }}" method="POST" class="space-y-4">
                         <!-- Fechas -->
                         <div class="border border-gray-300 rounded-lg overflow-hidden">
                             <div class="grid grid-cols-2">
@@ -201,6 +201,46 @@
             </div>
         </div>
     </div>
+<script>
+    // Función para calcular el precio total de la reserva
 
+function initPriceCalculation(pricePerNight) {
+    const checkinInput = document.getElementById('checkin');
+    const checkoutInput = document.getElementById('checkout');
+    const totalPriceDiv = document.getElementById('total-price');
+    const totalAmount = document.getElementById('total-amount');
+
+    if (!checkinInput || !checkoutInput || !totalPriceDiv || !totalAmount) return;
+
+    function calculateTotal() {
+        const checkin = new Date(checkinInput.value);
+        const checkout = new Date(checkoutInput.value);
+
+        if (checkin && checkout && checkout > checkin) {
+            const diffTime = checkout - checkin;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const total = diffDays * pricePerNight;
+
+            totalAmount.textContent = '€' + total;
+            totalPriceDiv.classList.remove('hidden');
+        } else {
+            totalAmount.textContent = '€0';
+            totalPriceDiv.classList.add('hidden');
+        }
+    }
+
+    checkinInput.addEventListener('change', calculateTotal);
+    checkoutInput.addEventListener('change', calculateTotal);
+    if (checkinInput.value && checkoutInput.value) {
+        calculateTotal(); 
+    }
+}
+    document.addEventListener('DOMContentLoaded', function () {
+        initPriceCalculation(parseFloat("{{ alojamiento[3] }}"));
+
+    });
+
+
+</script>
 </body>
 </html> 

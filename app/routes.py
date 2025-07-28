@@ -1,6 +1,7 @@
 from flask import render_template, request, jsonify, redirect, url_for, flash, session
-from app.models import agregar_resena, obtener_alojamientos, obtener_alojamientos_filtrados, obtener_resenas_alojamiento, registrar_usuario, verificar_resena_existente, verificar_usuario_existente, obtener_alojamiento_por_id
+from app.models import agregar_resena, obtener_alojamientos, obtener_alojamientos_filtrados, obtener_resenas_alojamiento, registrar_usuario, verificar_resena_existente, verificar_usuario_existente, obtener_alojamiento_por_id, obtener_usuario_por_email, crear_reserva, verificar_disponibilidad
 from app.models import get_db_connection
+from datetime import datetime
 
 def init_routes(app):
     
@@ -189,5 +190,143 @@ def init_routes(app):
             flash("Error al agregar la reseña.", "error")
         
         return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+
+    @app.route("/alojamiento/<int:alojamiento_id>/resumen-reserva", methods=["GET", "POST"])
+    def resumen_reserva(alojamiento_id):
+        # Verificar si el usuario está logueado
+        if 'usuario_email' not in session:
+            flash("Debes iniciar sesión para realizar una reserva.", "error")
+            return redirect(url_for('login', next=request.url))
+        
+        if request.method == "POST":
+            checkin = request.form.get("checkin")
+            checkout = request.form.get("checkout")
+            guests = request.form.get("guests")
+            
+            # Validar que todos los campos estén presentes
+            if not checkin or not checkout or not guests:
+                flash("Debes completar todos los campos de la reserva.", "error")
+                return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+            
+            # Obtener información del alojamiento
+            alojamiento = obtener_alojamiento_por_id(alojamiento_id)
+            if alojamiento is None:
+                flash("Alojamiento no encontrado", "error")
+                return redirect(url_for('inicio'))
+            
+            # Calcular el número de noches
+            fecha_checkin = datetime.strptime(checkin, '%Y-%m-%d')
+            fecha_checkout = datetime.strptime(checkout, '%Y-%m-%d')
+            noches = (fecha_checkout - fecha_checkin).days
+            
+            if noches <= 0:
+                flash("La fecha de check-out debe ser posterior al check-in.", "error")
+                return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+            
+            # Calcular el precio total
+            precio_por_noche = alojamiento[3]
+            precio_total = precio_por_noche * noches
+            
+            return render_template("resumen_reserva.html", 
+                                 alojamiento=alojamiento,
+                                 checkin=checkin,
+                                 checkout=checkout,
+                                 guests=guests,
+                                 noches=noches,
+                                 precio_por_noche=precio_por_noche,
+                                 precio_total=precio_total)
+        
+        # Si es GET, redirigir al detalle del alojamiento
+        return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+
+    @app.route("/alojamiento/<int:alojamiento_id>/procesar-pago", methods=["POST"])
+    def procesar_pago(alojamiento_id):
+        # Verificar si el usuario está logueado
+        if 'usuario_email' not in session:
+            flash("Debes iniciar sesión para realizar una reserva.", "error")
+            return redirect(url_for('login'))
+        
+        # Obtener datos del formulario
+        checkin = request.form.get("checkin")
+        checkout = request.form.get("checkout")
+        guests = request.form.get("guests")
+        metodo_pago = request.form.get("metodo_pago")
+        
+        # Validar que todos los campos estén presentes
+        if not checkin or not checkout or not guests or not metodo_pago:
+            flash("Debes completar todos los campos.", "error")
+            return redirect(url_for('resumen_reserva', alojamiento_id=alojamiento_id))
+        
+        # Obtener información del alojamiento
+        alojamiento = obtener_alojamiento_por_id(alojamiento_id)
+        if alojamiento is None:
+            flash("Alojamiento no encontrado", "error")
+            return redirect(url_for('inicio'))
+        
+        # Calcular el número de noches y precio total
+        fecha_checkin = datetime.strptime(checkin, '%Y-%m-%d')
+        fecha_checkout = datetime.strptime(checkout, '%Y-%m-%d')
+        noches = (fecha_checkout - fecha_checkin).days
+        precio_total = alojamiento[3] * noches
+        
+        # Verificar disponibilidad
+        if not verificar_disponibilidad(alojamiento_id, checkin, checkout):
+            flash("Lo sentimos, el alojamiento no está disponible para las fechas seleccionadas.", "error")
+            return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+        
+        # Obtener el ID del usuario
+        usuario = obtener_usuario_por_email(session['usuario_email'])
+        if not usuario:
+            flash("Error al obtener información del usuario.", "error")
+            return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+        
+        usuario_id = usuario[0]
+        
+        try:
+            # Crear la reserva en la base de datos
+            reserva_id = crear_reserva(usuario_id, alojamiento_id, checkin, checkout, precio_total)
+            
+            # Guardar datos de la reserva en la sesión para mostrar en la confirmación
+            session['reserva_temp'] = {
+                'alojamiento': alojamiento,
+                'checkin': checkin,
+                'checkout': checkout,
+                'guests': guests,
+                'noches': noches,
+                'precio_total': precio_total
+            }
+            
+            # Aquí podrías integrar con un sistema de pago real (Stripe, PayPal, etc.)
+            # Por ahora, simulamos que el pago fue exitoso
+            
+            return redirect(url_for('confirmacion_reserva', reserva_id=reserva_id))
+            
+        except Exception as e:
+            flash("Error al procesar la reserva. Por favor, intenta nuevamente.", "error")
+            return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+
+    @app.route("/reserva/<int:reserva_id>/confirmacion")
+    def confirmacion_reserva(reserva_id):
+        # Verificar si el usuario está logueado
+        if 'usuario_email' not in session:
+            flash("Debes iniciar sesión para ver esta página.", "error")
+            return redirect(url_for('login'))
+        
+        # Obtener los datos de la reserva de la sesión temporal
+        # En una implementación real, obtendrías esto de la base de datos
+        reserva_data = session.get('reserva_temp', {})
+        
+        if not reserva_data:
+            flash("No se encontró información de la reserva.", "error")
+            return redirect(url_for('inicio'))
+        
+        return render_template("confirmacion_reserva.html", 
+                             reserva_id=reserva_id,
+                             alojamiento=reserva_data.get('alojamiento'),
+                             checkin=reserva_data.get('checkin'),
+                             checkout=reserva_data.get('checkout'),
+                             guests=reserva_data.get('guests'),
+                             noches=reserva_data.get('noches'),
+                             precio_total=reserva_data.get('precio_total'))
    
   
