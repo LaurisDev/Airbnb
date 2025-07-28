@@ -35,7 +35,6 @@ def obtener_alojamientos_filtrados(location, checkin, checkout, guests):
     conn.close()
     return alojamientos
 
-
 def registrar_usuario (nombre, apellidos, email, telefono, contraseña):
     conn = get_db_connection()
     cur = conn.cursor()
