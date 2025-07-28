@@ -51,6 +51,96 @@
                         <h2 class="text-xl font-bold text-gray-800 mb-4">Descripción</h2>
                         <p class="text-gray-700 leading-relaxed">{{ alojamiento[2] }}</p>
                     </div>
+
+                    <!-- Capacidad -->
+                    <div class="mt-6 pt-6 border-t border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Capacidad</h3>
+                        <div class="flex items-center text-gray-700">
+                            <i class="fas fa-users text-rose-500 mr-3 text-lg"></i>
+                            <span class="text-lg">{{ alojamiento[6] }} huésped{% if alojamiento[6] > 1 %}es{% endif %}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Reseñas -->
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Reseñas</h2>
+                        {% if usuario_logueado %}
+                            <button id="btn-agregar-resena" class="bg-rose-500 text-white px-4 py-2 rounded-lg hover:bg-rose-600 transition duration-200">
+                                <i class="fas fa-plus mr-2"></i>Agregar Reseña
+                            </button>
+                        {% else %}
+                            <a href="{{ url_for('login', next=request.url) }}" class="bg-rose-500 text-white px-4 py-2 rounded-lg hover:bg-rose-600 transition duration-200">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Iniciar Sesión para Reseñar
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    <!-- Formulario para agregar reseña (inicialmente oculto) -->
+                    <div id="formulario-resena" class="hidden mb-8 p-6 bg-gray-50 rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Escribe tu reseña</h3>
+                        <form action="{{ url_for('agregar_resena_alojamiento', alojamiento_id=alojamiento[0]) }}" method="POST">
+                            <div class="mb-4">
+                                <label for="puntuacion" class="block text-sm font-medium text-gray-700 mb-2">Puntuación</label>
+                                <div class="flex space-x-2">
+                                    {% for i in range(1, 6) %}
+                                    <input type="radio" id="star{{ i }}" name="puntuacion" value="{{ i }}" class="hidden">
+                                    <label for="star{{ i }}" class="text-2xl text-gray-300 hover:text-rose-500 cursor-pointer transition duration-200">
+                                        <i class="fas fa-star"></i>
+                                    </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="comentario" class="block text-sm font-medium text-gray-700 mb-2">Comentario</label>
+                                <textarea id="comentario" name="comentario" rows="4" required 
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                                          placeholder="Comparte tu experiencia..."></textarea>
+                            </div>
+                            <div class="flex space-x-3">
+                                <button type="submit" class="bg-rose-500 text-white px-6 py-2 rounded-lg hover:bg-rose-600 transition duration-200">
+                                    Publicar Reseña
+                                </button>
+                                <button type="button" id="cancelar-resena" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400 transition duration-200">
+                                    Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Lista de reseñas -->
+                    <div id="lista-resenas">
+                        {% if resenas %}
+                            {% for resena in resenas %}
+                            <div class="border-b border-gray-200 pb-6 mb-6 last:border-b-0">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-rose-500 rounded-full flex items-center justify-center text-white font-semibold mr-3">
+                                            {{ resena[4][0] }}{{ resena[5][0] }}
+                                        </div>
+                                        <div>
+                                            <p class="font-semibold text-gray-800">{{ resena[4] }} {{ resena[5] }}</p>
+                                            <p class="text-sm text-gray-500">{{ resena[3].strftime('%d/%m/%Y') }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center">
+                                        {% for i in range(1, 6) %}
+                                            <i class="fas fa-star {% if i <= resena[2] %}text-rose-500{% else %}text-gray-300{% endif %}"></i>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <p class="text-gray-700">{{ resena[1] }}</p>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-8">
+                                <i class="fas fa-comments text-gray-300 text-4xl mb-4"></i>
+                                <p class="text-gray-500">Aún no hay reseñas para este alojamiento.</p>
+                                <p class="text-gray-400 text-sm">¡Sé el primero en compartir tu experiencia!</p>
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 

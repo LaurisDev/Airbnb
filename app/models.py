@@ -65,7 +65,7 @@ def obtener_alojamiento_por_id(alojamiento_id):
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("""
-        SELECT id, titulo, descripcion, precio_por_noche, imagen_principal, puntuacion
+        SELECT id, titulo, descripcion, precio_por_noche, imagen_principal, puntuacion, capacidad
         FROM alojamientos 
         WHERE id = %s
     """, (alojamiento_id,))
@@ -73,6 +73,50 @@ def obtener_alojamiento_por_id(alojamiento_id):
     cur.close()
     conn.close()
     return alojamiento
+
+def obtener_resenas_alojamiento(alojamiento_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT r.id, r.comentario, r.puntuacion, r.fecha, u.nombre, u.apellidos
+        FROM resenas r
+        JOIN usuarios u ON r.usuario_id = u.id
+        WHERE r.alojamiento_id = %s
+        ORDER BY r.fecha DESC
+    """, (alojamiento_id,))
+    resenas = cur.fetchall()
+    cur.close()
+    conn.close()
+    return resenas
+
+def agregar_resena(usuario_id, alojamiento_id, comentario, puntuacion):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("""
+            INSERT INTO resenas (usuario_id, alojamiento_id, comentario, puntuacion)
+            VALUES (%s, %s, %s, %s)
+        """, (usuario_id, alojamiento_id, comentario, puntuacion))
+        conn.commit()
+        return True
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        cur.close()
+        conn.close()
+
+def verificar_resena_existente(usuario_id, alojamiento_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT id FROM resenas 
+        WHERE usuario_id = %s AND alojamiento_id = %s
+    """, (usuario_id, alojamiento_id))
+    reseña = cur.fetchone()
+    cur.close()
+    conn.close()
+    return reseña is not None
 
 
 
