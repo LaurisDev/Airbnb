@@ -85,40 +85,42 @@ function updateSearchResults(results) {
 }
 
 // Función para calcular el precio total de la reserva
+
 function initPriceCalculation(pricePerNight) {
     const checkinInput = document.getElementById('checkin');
     const checkoutInput = document.getElementById('checkout');
     const totalPriceDiv = document.getElementById('total-price');
     const totalAmount = document.getElementById('total-amount');
 
-    if (!checkinInput || !checkoutInput || !totalPriceDiv || !totalAmount) {
-        return; // Si no estamos en la página de detalles, salir
-    }
+    if (!checkinInput || !checkoutInput || !totalPriceDiv || !totalAmount) return;
 
     function calculateTotal() {
-        const checkinIso = checkinInput.getAttribute('data-iso-date');
-        const checkoutIso = checkoutInput.getAttribute('data-iso-date');
-        
-        if (checkinIso && checkoutIso) {
-            const checkin = new Date(checkinIso);
-            const checkout = new Date(checkoutIso);
-            
-            if (checkout > checkin) {
-                const diffTime = Math.abs(checkout - checkin);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                const total = diffDays * pricePerNight;
-                
-                totalAmount.textContent = '€' + total;
-                totalPriceDiv.classList.remove('hidden');
-            } else {
-                totalPriceDiv.classList.add('hidden');
-            }
+        const checkin = new Date(checkinInput.value);
+        const checkout = new Date(checkoutInput.value);
+
+        if (checkin && checkout && checkout > checkin) {
+            const diffTime = checkout - checkin;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const total = diffDays * pricePerNight;
+
+            totalAmount.textContent = '€' + total;
+            totalPriceDiv.classList.remove('hidden');
         } else {
+            totalAmount.textContent = '€0';
             totalPriceDiv.classList.add('hidden');
         }
     }
 
     checkinInput.addEventListener('change', calculateTotal);
     checkoutInput.addEventListener('change', calculateTotal);
+    if (checkinInput.value && checkoutInput.value) {
+        calculateTotal(); 
+    }
 }
+    document.addEventListener('DOMContentLoaded', function () {
+        initPriceCalculation(parseFloat("{{ alojamiento[3] }}"));
+
+    });
+
+
 
