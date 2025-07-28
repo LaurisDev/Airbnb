@@ -81,13 +81,15 @@ def init_routes(app):
 #LOGIN DE USUARIOS
     @app.route("/login", methods=["GET", "POST"])
     def login():
+        next_url = request.args.get('next') if request.method == 'GET' else request.form.get('next')  # URL a la que redirigir después del login
+
         if request.method == 'POST':
             email = request.form.get("email", "").strip()
             contraseña = request.form.get("contraseña", "").strip()
 
             if not email or not contraseña:
                 flash("Debes ingresar tu email y contraseña.", "error")
-                return render_template("login.html")
+                return render_template("login.html", next=next_url)
 
             try:
                 conn = get_db_connection()
@@ -98,19 +100,20 @@ def init_routes(app):
                 conn.close()
             except Exception as e:
                 flash("Error en la base de datos.", "error")
-                return render_template("login.html")
+                return render_template("login.html", next=next_url)
 
             if not user:
                 flash("Email o contraseña incorrectos.", "error")
-                return redirect(url_for("login"))
+                return redirect(url_for("login", next=next_url))
 
-            #  guardar al usuario en sesión 
+            # guardar usuario en sesión
             session['usuario_email'] = user[3]
 
             flash("Inicio de sesión exitoso.", "success")
-            return redirect(url_for('inicio'))
+            return redirect(next_url or url_for('inicio'))  # redirige a la vista deseada o al inicio
 
-        return render_template("login.html")
+        return render_template("login.html", next=next_url)#get
+
 
 
     @app.route("/logout")
@@ -202,6 +205,7 @@ def init_routes(app):
         if 'usuario_email' not in session:
             flash("Debes iniciar sesión para realizar una reserva.", "error")
             return redirect(url_for('login', next=request.url))
+                
         
         if request.method == "POST":
             checkin = request.form.get("checkin")

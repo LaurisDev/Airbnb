@@ -10,7 +10,10 @@
         <h2 class="text-2xl font-bold mb-4 text-center">Iniciar Sesión</h2>
 
         <!-- FORMULARIO COMIENZA AQUÍ -->
-        <form method="POST" action="{{ url_for('login') }}">
+        <form method="POST" action="{{ url_for('login', next=next) }}">
+            <!-- Campo oculto para conservar la URL a la que debe redirigir luego del login -->
+            <input type="hidden" name="next" value="{{ next or '' }}">
+
             <div class="mb-4">
                 <label for="email" class="block text-gray-700">Correo electrónico</label>
                 <input type="email" id="email" name="email" class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
@@ -33,7 +36,9 @@
         </form>
 
         <div class="mt-4 text-center">
-            <p class="text-gray-600">¿No tienes una cuenta? <a href="{{ url_for('registro') }}" class="text-rose-500 hover:underline">Regístrate aquí</a></p>
+            <p class="text-gray-600">¿No tienes una cuenta? 
+                <a href="{{ url_for('registro') }}" class="text-rose-500 hover:underline">Regístrate aquí</a>
+            </p>
         </div>
     </div>
 </body>
