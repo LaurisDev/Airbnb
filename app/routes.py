@@ -140,13 +140,24 @@ def init_routes(app):
         # Verificar si el usuario está logueado
         usuario_logueado = 'usuario_email' in session
         
+        # Obtener información del usuario si está logueado
+        usuario_info = None
+        if 'usuario_email' in session:
+            usuario_info = obtener_usuario_por_email(session['usuario_email'])
+        
+        # Obtener calendario del mes
+        from app.models import generar_calendario_mes
+        calendario = generar_calendario_mes(alojamiento_id)
+        
         return render_template("detalle_alojamiento.html", 
                              alojamiento=alojamiento, 
                              checkin=checkin, 
                              checkout=checkout, 
                              guests=guests,
                              resenas=resenas,
-                             usuario_logueado=usuario_logueado)
+                             usuario_logueado=usuario_logueado,
+                             usuario_info=usuario_info,
+                             calendario=calendario)
 
     @app.route("/alojamiento/<int:alojamiento_id>/resena", methods=["POST"])
     def agregar_resena_alojamiento(alojamiento_id):
@@ -198,6 +209,27 @@ def init_routes(app):
             flash("Error al agregar la reseña.", "error")
         
         return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+
+    @app.route("/alojamiento/<int:alojamiento_id>/agregar-resena")
+    def agregar_resena_pagina(alojamiento_id):
+        # Verificar si el usuario está logueado
+        if 'usuario_email' not in session:
+            flash("Debes iniciar sesión para agregar una reseña.", "error")
+            return redirect(url_for('login', next=request.url))
+        
+        # Obtener información del alojamiento
+        alojamiento = obtener_alojamiento_por_id(alojamiento_id)
+        if alojamiento is None:
+            flash("Alojamiento no encontrado", "error")
+            return redirect(url_for('inicio'))
+        
+        # Verificar si el usuario ya ha dejado una reseña para este alojamiento
+        usuario = obtener_usuario_por_email(session['usuario_email'])
+        if usuario and verificar_resena_existente(usuario[0], alojamiento_id):
+            flash("Ya has dejado una reseña para este alojamiento.", "error")
+            return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+        
+        return render_template("agregar_resena.html", alojamiento=alojamiento)
 
     @app.route("/alojamiento/<int:alojamiento_id>/resumen-reserva", methods=["GET", "POST"])
     def resumen_reserva(alojamiento_id):
@@ -253,6 +285,9 @@ def init_routes(app):
             precio_por_noche = alojamiento[3]
             precio_total = precio_por_noche * noches
             
+            # Obtener información del usuario
+            usuario_info = obtener_usuario_por_email(session['usuario_email'])
+            
             return render_template("resumen_reserva.html", 
                                  alojamiento=alojamiento,
                                  checkin=checkin,
@@ -260,7 +295,8 @@ def init_routes(app):
                                  guests=guests,
                                  noches=noches,
                                  precio_por_noche=precio_por_noche,
-                                 precio_total=precio_total)
+                                 precio_total=precio_total,
+                                 usuario_info=usuario_info)
         
         # Si es GET, redirigir al detalle del alojamiento
         return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
@@ -363,6 +399,9 @@ def init_routes(app):
             flash("No se encontró información de la reserva.", "error")
             return redirect(url_for('inicio'))
         
+        # Obtener información del usuario
+        usuario_info = obtener_usuario_por_email(session['usuario_email'])
+        
         return render_template("confirmacion_reserva.html", 
                              reserva_id=reserva_id,
                              alojamiento=reserva_data.get('alojamiento'),
@@ -370,6 +409,52 @@ def init_routes(app):
                              checkout=reserva_data.get('checkout'),
                              guests=reserva_data.get('guests'),
                              noches=reserva_data.get('noches'),
-                             precio_total=reserva_data.get('precio_total'))
+                             precio_total=reserva_data.get('precio_total'),
+                             usuario_info=usuario_info)
+
+    @app.route("/mis-reservas")
+    def mis_reservas():
+        # Verificar si el usuario está logueado
+        if 'usuario_email' not in session:
+            flash("Debes iniciar sesión para ver tus reservas.", "error")
+            return redirect(url_for('login'))
+        
+        # Obtener el ID del usuario
+        usuario = obtener_usuario_por_email(session['usuario_email'])
+        if not usuario:
+            flash("Error al obtener información del usuario.", "error")
+            return redirect(url_for('inicio'))
+        
+        usuario_id = usuario[0]
+        
+        # Obtener las reservas del usuario
+        from app.models import obtener_reservas_usuario
+        reservas = obtener_reservas_usuario(usuario_id)
+        
+        return render_template("mis_reservas.html", reservas=reservas, usuario_info=usuario)
+
+    @app.route("/cancelar-reserva/<int:reserva_id>", methods=["POST"])
+    def cancelar_reserva_route(reserva_id):
+        # Verificar si el usuario está logueado
+        if 'usuario_email' not in session:
+            flash("Debes iniciar sesión para cancelar reservas.", "error")
+            return redirect(url_for('login'))
+        
+        # Obtener el ID del usuario
+        usuario = obtener_usuario_por_email(session['usuario_email'])
+        if not usuario:
+            flash("Error al obtener información del usuario.", "error")
+            return redirect(url_for('inicio'))
+        
+        usuario_id = usuario[0]
+        
+        # Cancelar la reserva
+        from app.models import cancelar_reserva
+        if cancelar_reserva(reserva_id, usuario_id):
+            flash("Reserva cancelada exitosamente.", "success")
+        else:
+            flash("No se pudo cancelar la reserva. Verifica que la reserva te pertenezca.", "error")
+        
+        return redirect(url_for('mis_reservas'))
    
   

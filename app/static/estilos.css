@@ -12,7 +12,37 @@
 
 .dropdown {
     display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    z-index: 1000;
+    min-width: 12rem;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
 }
+
 .dropdown.active {
-            display: block;
+    display: block;
+}
+
+.dropdown a {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: #374151;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.dropdown a:hover {
+    background-color: #fdf2f8;
+}
+
+.dropdown p {
+    padding: 0.75rem 1rem;
+    color: #374151;
+    border-bottom: 1px solid #e5e7eb;
+    margin: 0;
 }

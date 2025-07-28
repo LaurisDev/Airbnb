@@ -39,14 +39,20 @@
             <i class="fas fa-bars text-gray-600 px-2"></i>
             <i class="fas fa-user-circle text-gray-600 text-2xl" id="user-icon"></i>
 
-        <!--esto es para que cambie el contenido del dropdown dependiendo si el usuario está logueado o no------------------------------------ -->
+        <!-- Dropdown del usuario -->
         <div class="dropdown absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10" id="user-dropdown">
             <div class="py-2">
                 {% if session.usuario_email and usuario_info %}
                     <p class="px-4 py-2 text-gray-800">Bienvenido, <strong>{{ usuario_info[1] }} {{ usuario_info[2] }}</strong></p>
+                    <a href="{{ url_for('mis_reservas') }}" class="block px-4 py-2 text-gray-800 hover:bg-rose-100 transition duration-200">
+                        <i class="fas fa-calendar-alt mr-2"></i>Mis Reservas
+                    </a>
                     <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-gray-800 hover:bg-rose-100 transition duration-200">Cerrar sesión</a>
                 {% elif session.usuario_email %}
                     <p class="px-4 py-2 text-gray-800">Bienvenido, <strong>{{ session.usuario_email }}</strong></p>
+                    <a href="{{ url_for('mis_reservas') }}" class="block px-4 py-2 text-gray-800 hover:bg-rose-100 transition duration-200">
+                        <i class="fas fa-calendar-alt mr-2"></i>Mis Reservas
+                    </a>
                     <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-gray-800 hover:bg-rose-100 transition duration-200">Cerrar sesión</a>
                 {% else %}
                     <a href="{{ url_for('login') }}" class="block px-4 py-2 text-gray-800 hover:bg-rose-100 transition duration-200">Iniciar sesión</a>
@@ -54,7 +60,6 @@
                 {% endif %}
             </div>
         </div>
-        <!-- fin del dropdown------------------------------------------------------------------------------------------------------------- -->
     </nav>
 
     <!-- Listado de propiedades -->

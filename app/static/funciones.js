@@ -1,53 +1,68 @@
-//Despligue
-const userIcon = document.getElementById('user-icon');
-        const userDropdown = document.getElementById('user-dropdown');
+// Función para inicializar el dropdown del usuario
+function initUserDropdown() {
+    const userIcon = document.getElementById('user-icon');
+    const userDropdown = document.getElementById('user-dropdown');
 
-        userIcon.addEventListener('click', () => {
+    if (userIcon && userDropdown) {
+        userIcon.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
             userDropdown.classList.toggle('active');
         });
 
         // Cerrar el menú si se hace clic fuera de él
-        window.addEventListener('click', (event) => {
+        document.addEventListener('click', (event) => {
             if (!userIcon.contains(event.target) && !userDropdown.contains(event.target)) {
                 userDropdown.classList.remove('active');
             }
         });
+    }
+}
 
 // Función para mostrar el selector de fecha 
-document.getElementById('checkin').addEventListener('click', () => {
-    document.getElementById('checkin').showPicker();
-});
+function initDatePickers() {
+    const checkinInput = document.getElementById('checkin');
+    const checkoutInput = document.getElementById('checkout');
 
-document.getElementById('checkout').addEventListener('click', () => {
-    document.getElementById('checkout').showPicker();
-});
+    if (checkinInput) {
+        checkinInput.addEventListener('click', () => {
+            checkinInput.showPicker();
+        });
+    }
 
+    if (checkoutInput) {
+        checkoutInput.addEventListener('click', () => {
+            checkoutInput.showPicker();
+        });
+    }
+}
 
-// Función para manejar la búsqueda de alojamientos (movida a DOMContentLoaded)
+// Función para manejar la búsqueda de alojamientos
+function initSearch() {
+    const searchButton = document.getElementById('search-button');
+    if (searchButton) {
+        searchButton.addEventListener('click', async e => {
+            e.preventDefault();
 
+            const fields = ['location', 'checkin', 'checkout', 'guests'];
+            const data = Object.fromEntries(fields.map(id => [id, document.getElementById(id)?.value || '']));
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('search-button').addEventListener('click', async e => {
-        e.preventDefault();
+            try {
+                const response = await fetch('/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
 
-        const fields = ['location', 'checkin', 'checkout', 'guests'];
-        const data = Object.fromEntries(fields.map(id => [id, document.getElementById(id).value]));
-
-        try {
-            const response = await fetch('/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-
-            const results = await response.json();
-            updateSearchResults(results);
-        } catch (err) {
-            console.error('Error al buscar:', err);
-            alert('Ocurrió un error al buscar alojamientos.');
-        }
-    });
-});
+                const results = await response.json();
+                updateSearchResults(results);
+            } catch (err) {
+                console.error('Error al buscar:', err);
+                alert('Ocurrió un error al buscar alojamientos.');
+            }
+        });
+    }
+}
 
 function updateSearchResults(results) {
     const container = document.querySelector('.grid');
@@ -60,7 +75,7 @@ function updateSearchResults(results) {
         ? '<p>No se encontraron alojamientos con esos criterios.</p>'
         : results.map(a => `
             <div class="property-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition duration-300">
-                <a href="/alojamiento/${a[0]}?checkin=${encodeURIComponent(document.getElementById('checkin').value)}&checkout=${encodeURIComponent(document.getElementById('checkout').value)}&guests=${encodeURIComponent(document.getElementById('guests').value)}">
+                <a href="/alojamiento/${a[0]}?checkin=${encodeURIComponent(document.getElementById('checkin')?.value || '')}&checkout=${encodeURIComponent(document.getElementById('checkout')?.value || '')}&guests=${encodeURIComponent(document.getElementById('guests')?.value || '')}">
 
                <div class="relative">
                     <img src="${a[4]}" alt="${a[1]}" class="w-full h-48 object-cover" loading="lazy"
@@ -85,7 +100,6 @@ function updateSearchResults(results) {
 }
 
 // Función para calcular el precio total de la reserva
-
 function initPriceCalculation(pricePerNight) {
     const checkinInput = document.getElementById('checkin');
     const checkoutInput = document.getElementById('checkout');
@@ -117,10 +131,20 @@ function initPriceCalculation(pricePerNight) {
         calculateTotal(); 
     }
 }
-    document.addEventListener('DOMContentLoaded', function () {
-        initPriceCalculation(parseFloat("{{ alojamiento[3] }}"));
 
-    });
+// Inicializar todo cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    initUserDropdown();
+    initDatePickers();
+    initSearch();
+    
+    // Inicializar cálculo de precio si estamos en la página de detalle
+    const priceElement = document.querySelector('[data-price-per-night]');
+    if (priceElement) {
+        const pricePerNight = parseFloat(priceElement.dataset.pricePerNight);
+        initPriceCalculation(pricePerNight);
+    }
+});
 
 
 
