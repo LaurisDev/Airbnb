@@ -121,7 +121,7 @@ def verificar_resena_existente(usuario_id, alojamiento_id):
 def obtener_usuario_por_email(email):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT id FROM usuarios WHERE email = %s", (email,))
+    cur.execute("SELECT id, nombre, apellidos FROM usuarios WHERE email = %s", (email,))
     usuario = cur.fetchone()
     cur.close()
     conn.close()

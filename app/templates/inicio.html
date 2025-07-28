@@ -42,7 +42,10 @@
         <!--esto es para que cambie el contenido del dropdown dependiendo si el usuario está logueado o no------------------------------------ -->
         <div class="dropdown absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10" id="user-dropdown">
             <div class="py-2">
-                {% if session.usuario_email %}
+                {% if session.usuario_email and usuario_info %}
+                    <p class="px-4 py-2 text-gray-800">Bienvenido, <strong>{{ usuario_info[1] }} {{ usuario_info[2] }}</strong></p>
+                    <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-gray-800 hover:bg-rose-100 transition duration-200">Cerrar sesión</a>
+                {% elif session.usuario_email %}
                     <p class="px-4 py-2 text-gray-800">Bienvenido, <strong>{{ session.usuario_email }}</strong></p>
                     <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-gray-800 hover:bg-rose-100 transition duration-200">Cerrar sesión</a>
                 {% else %}

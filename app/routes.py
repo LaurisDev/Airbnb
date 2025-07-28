@@ -24,8 +24,13 @@ def init_routes(app):
             return jsonify(alojamientos)
         else:
             alojamientos = obtener_alojamientos()
+        
+        # Obtener información del usuario si está logueado
+        usuario_info = None
+        if 'usuario_email' in session:
+            usuario_info = obtener_usuario_por_email(session['usuario_email'])
             
-        return render_template("inicio.html", alojamientos=alojamientos)
+        return render_template("inicio.html", alojamientos=alojamientos, usuario_info=usuario_info)
 
 #----------------------------------------------------------------------------------------------------
 #REGISTRO DE USUARIOS
@@ -217,10 +222,27 @@ def init_routes(app):
             # Calcular el número de noches
             fecha_checkin = datetime.strptime(checkin, '%Y-%m-%d')
             fecha_checkout = datetime.strptime(checkout, '%Y-%m-%d')
+            fecha_actual = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+            
+            # Validar que las fechas no sean pasadas
+            if fecha_checkin < fecha_actual:
+                flash("No puedes seleccionar una fecha de check-in en el pasado. Por favor, selecciona una fecha futura.", "error")
+                return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+            
+            if fecha_checkout < fecha_actual:
+                flash("No puedes seleccionar una fecha de check-out en el pasado. Por favor, selecciona una fecha futura.", "error")
+                return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+            
             noches = (fecha_checkout - fecha_checkin).days
             
             if noches <= 0:
                 flash("La fecha de check-out debe ser posterior al check-in.", "error")
+                return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+            
+            # Validar capacidad del alojamiento
+            capacidad_alojamiento = alojamiento[6]  # alojamiento[6] es la capacidad
+            if int(guests) > capacidad_alojamiento:
+                flash(f"Lo sentimos, este alojamiento solo puede alojar hasta {capacidad_alojamiento} huésped{'es' if capacidad_alojamiento > 1 else ''}.", "error")
                 return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
             
             # Calcular el precio total
@@ -266,8 +288,25 @@ def init_routes(app):
         # Calcular el número de noches y precio total
         fecha_checkin = datetime.strptime(checkin, '%Y-%m-%d')
         fecha_checkout = datetime.strptime(checkout, '%Y-%m-%d')
+        fecha_actual = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        
+        # Validar que las fechas no sean pasadas
+        if fecha_checkin < fecha_actual:
+            flash("No puedes seleccionar una fecha de check-in en el pasado. Por favor, selecciona una fecha futura.", "error")
+            return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+        
+        if fecha_checkout < fecha_actual:
+            flash("No puedes seleccionar una fecha de check-out en el pasado. Por favor, selecciona una fecha futura.", "error")
+            return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+        
         noches = (fecha_checkout - fecha_checkin).days
         precio_total = alojamiento[3] * noches
+        
+        # Validar capacidad del alojamiento
+        capacidad_alojamiento = alojamiento[6]  # alojamiento[6] es la capacidad
+        if int(guests) > capacidad_alojamiento:
+            flash(f"Lo sentimos, este alojamiento solo puede alojar hasta {capacidad_alojamiento} huésped{'es' if capacidad_alojamiento > 1 else ''}.", "error")
+            return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
         
         # Verificar disponibilidad
         if not verificar_disponibilidad(alojamiento_id, checkin, checkout):

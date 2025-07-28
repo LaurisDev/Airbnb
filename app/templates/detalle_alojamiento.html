@@ -177,23 +177,30 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Mensajes de error para fechas -->
+                        <div id="fecha-error" class="hidden text-red-500 text-xs px-3 py-2 bg-red-50 rounded-lg">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                            <span id="fecha-error-text"></span>
+                        </div>
                         
                         <!-- Huéspedes -->
                         <div class="border border-gray-300 rounded-lg">
                             <label for="guests" class="block text-xs font-medium text-gray-700 px-3 pt-3">Huéspedes</label>
                             <select id="guests" name="guests" required class="w-full px-3 pb-3 text-sm border-0 focus:ring-0 focus:outline-none bg-transparent">
                                 <option value="">¿Cuántos?</option>
-                                {% for i in range(1, 11) %}
+                                {% for i in range(1, alojamiento[6] + 1) %}
                                 <option value="{{ i }}" {% if guests == i|string %}selected{% endif %}>
                                     {{ i }} Huésped{% if i > 1 %}es{% endif %}
                                 </option>
                                 {% endfor %}
                             </select>
-
+                            <div class="px-3 pb-2">
+                                <p class="text-xs text-gray-500">Capacidad máxima: {{ alojamiento[6] }} huésped{% if alojamiento[6] > 1 %}es{% endif %}</p>
+                            </div>
                         </div>
 
                         <!-- Botón de reserva -->
-                        <button type="submit" class="w-full bg-rose-500 text-white py-4 px-4 rounded-lg font-semibold text-base hover:bg-rose-600 transition duration-200">
+                        <button type="submit" id="btn-reservar" class="w-full bg-rose-500 text-white py-4 px-4 rounded-lg font-semibold text-base hover:bg-rose-600 transition duration-200">
                             Reservar
                         </button>
                     </form>
@@ -237,7 +244,89 @@ function initPriceCalculation(pricePerNight) {
 }
     document.addEventListener('DOMContentLoaded', function () {
         initPriceCalculation(parseFloat("{{ alojamiento[3] }}"));
-
+        
+        // Validación de capacidad de huéspedes
+        const guestsSelect = document.getElementById('guests');
+        const capacidadMaxima = parseInt("{{ alojamiento[6] }}");
+        
+        if (guestsSelect) {
+            guestsSelect.addEventListener('change', function() {
+                const selectedGuests = parseInt(this.value);
+                if (selectedGuests > capacidadMaxima) {
+                    alert('Lo sentimos, este alojamiento solo puede alojar hasta ' + capacidadMaxima + ' huésped' + (capacidadMaxima > 1 ? 'es' : '') + '.');
+                    this.value = '';
+                }
+            });
+        }
+        
+        // Validación de fechas pasadas
+        const form = document.querySelector('form');
+        const btnReservar = document.getElementById('btn-reservar');
+        const fechaError = document.getElementById('fecha-error');
+        const fechaErrorText = document.getElementById('fecha-error-text');
+        
+        function validarFechas() {
+            const checkinInput = document.getElementById('checkin');
+            const checkoutInput = document.getElementById('checkout');
+            
+            if (checkinInput && checkoutInput && checkinInput.value && checkoutInput.value) {
+                const checkin = new Date(checkinInput.value);
+                const checkout = new Date(checkoutInput.value);
+                const today = new Date();
+                
+                // Resetear la fecha de hoy a medianoche para comparación precisa
+                today.setHours(0, 0, 0, 0);
+                
+                // Validar que las fechas no sean pasadas
+                if (checkin < today) {
+                    fechaErrorText.textContent = 'No puedes seleccionar una fecha de check-in en el pasado.';
+                    fechaError.classList.remove('hidden');
+                    return false;
+                }
+                
+                if (checkout < today) {
+                    fechaErrorText.textContent = 'No puedes seleccionar una fecha de check-out en el pasado.';
+                    fechaError.classList.remove('hidden');
+                    return false;
+                }
+                
+                // Validar que checkout sea posterior a checkin
+                if (checkout <= checkin) {
+                    fechaErrorText.textContent = 'La fecha de check-out debe ser posterior a la fecha de check-in.';
+                    fechaError.classList.remove('hidden');
+                    return false;
+                }
+                
+                // Si todo está bien, ocultar el error
+                fechaError.classList.add('hidden');
+                return true;
+            }
+            
+            // Si no hay fechas seleccionadas, ocultar el error
+            fechaError.classList.add('hidden');
+            return true;
+        }
+        
+        if (form && btnReservar) {
+            // Validar fechas en tiempo real
+            const checkinInput = document.getElementById('checkin');
+            const checkoutInput = document.getElementById('checkout');
+            
+            if (checkinInput) {
+                checkinInput.addEventListener('change', validarFechas);
+            }
+            if (checkoutInput) {
+                checkoutInput.addEventListener('change', validarFechas);
+            }
+            
+            // Validar al enviar el formulario
+            form.addEventListener('submit', function(e) {
+                if (!validarFechas()) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        }
     });
 
 

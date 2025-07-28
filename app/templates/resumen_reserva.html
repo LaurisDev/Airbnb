@@ -71,7 +71,14 @@
                                 <i class="fas fa-users text-rose-500 mr-3"></i>
                                 <span class="text-gray-700">Huéspedes</span>
                             </div>
-                            <span class="font-medium">{{ guests }} persona{% if guests|int > 1 %}s{% endif %}</span>
+                            <div class="text-right">
+                                <span class="font-medium">{{ guests }} persona{% if guests|int > 1 %}s{% endif %}</span>
+                                {% if guests|int > alojamiento[6] %}
+                                    <div class="text-red-500 text-xs mt-1">⚠️ Excede la capacidad máxima ({{ alojamiento[6] }})</div>
+                                {% else %}
+                                    <div class="text-green-500 text-xs mt-1">✓ Dentro de la capacidad ({{ alojamiento[6] }})</div>
+                                {% endif %}
+                            </div>
                         </div>
                         <div class="flex justify-between items-center">
                             <div class="flex items-center">
@@ -256,6 +263,16 @@
             // Manejar envío del formulario
             document.getElementById('form-pago').addEventListener('submit', function(e) {
                 const metodoSeleccionado = document.querySelector('input[name="metodo_pago"]:checked').value;
+                
+                // Validar capacidad de huéspedes
+                const guests = parseInt(document.querySelector('input[name="guests"]').value);
+                const capacidadMaxima = parseInt("{{ alojamiento[6] }}");
+                
+                if (guests > capacidadMaxima) {
+                    e.preventDefault();
+                    alert('Lo sentimos, este alojamiento solo puede alojar hasta ' + capacidadMaxima + ' huésped' + (capacidadMaxima > 1 ? 'es' : '') + '. Por favor, regresa y selecciona un número menor de huéspedes.');
+                    return;
+                }
                 
                 if (metodoSeleccionado === 'tarjeta') {
                     // Validar campos de tarjeta
