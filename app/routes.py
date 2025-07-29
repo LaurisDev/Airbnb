@@ -73,7 +73,7 @@ def init_routes(app):
                 return render_template("registro.html")
 
             registrar_usuario(nombre, apellidos, email, telefono, contraseña)
-            flash("Registro exitoso. Ahora puedes iniciar sesión.", "success")
+            flash("Registro exitoso. Ahora puedes iniciar sesión.", "success_registro")
             return redirect(url_for('login'))
 
         return render_template("registro.html")
@@ -88,7 +88,7 @@ def init_routes(app):
             contraseña = request.form.get("contraseña", "").strip()
 
             if not email or not contraseña:
-                flash("Debes ingresar tu email y contraseña.", "error")
+                flash("Debes ingresar tu email y contraseña.", "error_login")
                 return render_template("login.html", next=next_url)
 
             try:
@@ -103,13 +103,13 @@ def init_routes(app):
                 return render_template("login.html", next=next_url)
 
             if not user:
-                flash("Email o contraseña incorrectos.", "error")
+                flash("Email o contraseña incorrectos.", "error_login")
                 return redirect(url_for("login", next=next_url))
 
             # guardar usuario en sesión
             session['usuario_email'] = user[3]
 
-            flash("Inicio de sesión exitoso.", "success")
+            flash("Inicio de sesión exitoso.", "success_login")
             return redirect(next_url or url_for('inicio'))  # redirige a la vista deseada o al inicio
 
         return render_template("login.html", next=next_url)#get
@@ -119,7 +119,7 @@ def init_routes(app):
     @app.route("/logout")
     def logout():
         session.clear()
-        flash("Has cerrado sesión correctamente.", "success")
+        flash("Has cerrado sesión correctamente.", "success_logout")
         return redirect(url_for("login"))
         
 #----------------------------------------------------------------------------------------------------
@@ -204,9 +204,9 @@ def init_routes(app):
         # Agregar la reseña
         try:
             agregar_resena(usuario_id, alojamiento_id, comentario, puntuacion)
-            flash("Reseña agregada exitosamente.", "success")
+            flash("Reseña agregada exitosamente.", "success_resenas")
         except Exception as e:
-            flash("Error al agregar la reseña.", "error")
+            flash("Error al agregar la reseña.", "error_resenas")
         
         return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
 
@@ -451,9 +451,9 @@ def init_routes(app):
         # Cancelar la reserva
         from app.models import cancelar_reserva
         if cancelar_reserva(reserva_id, usuario_id):
-            flash("Reserva cancelada exitosamente.", "success")
+            flash("Reserva cancelada exitosamente.", "success_reservas")
         else:
-            flash("No se pudo cancelar la reserva. Verifica que la reserva te pertenezca.", "error")
+            flash("No se pudo cancelar la reserva. Verifica que la reserva te pertenezca.", "error_reservas")
         
         return redirect(url_for('mis_reservas'))
    
