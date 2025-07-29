@@ -13,10 +13,10 @@
     <!-- Barra de navegación -->
     <nav class="bg-white shadow-sm py-4 px-6 flex justify-between items-center sticky top-0 z-50">
         <div class="flex items-center">
-            <a href="/" class="text-xl font-bold text-rose-500">Rinconcito</a>
+            <a href="/" class="text-xl font-bold text-purple-500">Rinconcito</a>
         </div>
         <div class="flex items-center space-x-4">
-            <a href="/" class="text-gray-600 hover:text-rose-500 transition duration-200">
+            <a href="/" class="text-gray-600 hover:text-purple-500 transition duration-200">
                 <i class="fas fa-arrow-left mr-2"></i>Volver
             </a>
         </div>
@@ -40,7 +40,7 @@
                 
 
                         <div class="flex items-center">
-                            <i class="fas fa-star text-rose-500 mr-1"></i>
+                            <i class="fas fa-star text-purple-500 mr-1"></i>
                             <span class="font-medium">{{ alojamiento[5] }}</span>
                             <span class="text-gray-500 ml-2">• Excelente ubicación</span>
                         </div>
@@ -111,7 +111,7 @@
                     <div class="mt-6 pt-6 border-t border-gray-200">
                         <h3 class="text-lg font-semibold text-gray-800 mb-3">Capacidad</h3>
                         <div class="flex items-center text-gray-700">
-                            <i class="fas fa-users text-rose-500 mr-3 text-lg"></i>
+                            <i class="fas fa-users text-purple-500 mr-3 text-lg"></i>
                             <span class="text-lg">{{ alojamiento[6] }} huésped{% if alojamiento[6] > 1 %}es{% endif %}</span>
                         </div>
                     </div>
@@ -122,11 +122,11 @@
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-bold text-gray-800">Reseñas</h2>
                         {% if usuario_logueado %}
-                            <a href="{{ url_for('agregar_resena_pagina', alojamiento_id=alojamiento[0]) }}" class="bg-rose-500 text-white px-4 py-2 rounded-lg hover:bg-rose-600 transition duration-200">
+                            <a href="{{ url_for('agregar_resena_pagina', alojamiento_id=alojamiento[0]) }}" class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition duration-200">
                                 <i class="fas fa-plus mr-2"></i>Agregar Reseña
                             </a>
                         {% else %}
-                            <a href="{{ url_for('login', next=request.url) }}" class="bg-rose-500 text-white px-4 py-2 rounded-lg hover:bg-rose-600 transition duration-200">
+                            <a href="{{ url_for('login', next=request.url) }}" class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition duration-200">
                                 <i class="fas fa-sign-in-alt mr-2"></i>Iniciar Sesión para Reseñar
                             </a>
                         {% endif %}
@@ -154,7 +154,7 @@
                             <div class="border-b border-gray-200 pb-6 mb-6 last:border-b-0">
                                 <div class="flex items-center justify-between mb-2">
                                     <div class="flex items-center">
-                                        <div class="w-10 h-10 bg-rose-500 rounded-full flex items-center justify-center text-white font-semibold mr-3">
+                                        <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white font-semibold mr-3">
                                             {{ resena[4][0] }}{{ resena[5][0] }}
                                         </div>
                                         <div>
@@ -164,7 +164,7 @@
                                     </div>
                                     <div class="flex items-center">
                                         {% for i in range(1, 6) %}
-                                            <i class="fas fa-star {% if i <= resena[2] %}text-rose-500{% else %}text-gray-300{% endif %}"></i>
+                                            <i class="fas fa-star {% if i <= resena[2] %}text-purple-500{% else %}text-gray-300{% endif %}"></i>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -238,7 +238,7 @@
                         </div>
 
                         <!-- Botón de reserva -->
-                        <button type="submit" id="btn-reservar" class="w-full bg-rose-500 text-white py-4 px-4 rounded-lg font-semibold text-base hover:bg-rose-600 transition duration-200">
+                        <button type="submit" id="btn-reservar" class="w-full bg-purple-500 text-white py-4 px-4 rounded-lg font-semibold text-base hover:bg-purple-600 transition duration-200">
                             Reservar
                         </button>
                     </form>

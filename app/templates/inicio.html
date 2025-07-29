@@ -14,27 +14,11 @@
     <!-- Barra de navegación -->
     <nav class="bg-white shadow-sm py-4 px-6 flex justify-between items-center sticky top-0 z-50">
         <div class="flex justify-between items-center">
-            <span class="ml-2 text-xl font-bold text-rose-500 hidden md:block">Rinconcito</span>
+            <span class="ml-2 text-xl font-bold text-purple-500 hidden md:block">Rinconcito</span>
         </div>
-        <div class="hidden md:flex items-center border border-gray-200 rounded-full py-2 px-4 shadow-sm hover:shadow-md transition duration-200">
-            <div class="border-r border-gray-300 pr-4">
-                <input type="text" id="location" placeholder="Cualquier lugar" class="outline-none text-sm w-32" required>
-            </div>
-            <div class="border-r border-gray-300 px-4 relative">
-                    <input type="date" id="checkin" class="text-sm outline-none absolute opacity-0 w-full h-full">
-                    <span class="text-sm font-medium cursor-pointer" id="checkin-label">Check-in</span>
-            </div>
-            <div class="border-r border-gray-300 px-4 relative">
-                    <input type="date" id="checkout" class="text-sm outline-none absolute opacity-0 w-full h-full">
-                    <span class="text-sm font-medium cursor-pointer" id="checkout-label">Check-out</span>
-            </div>
-            <div class="pl-6">
-                <input type="number" id="guests" placeholder="¿Cuántos?" min="1" class="w-21 outline-none text-sm px-1" required>
-            </div>
-            <button type="submit" id="search-button" class="bg-rose-500 p-2 rounded-full ml-2">
-                <i class="fas fa-search text-white"></i>
-            </button>
-        </div>
+        
+        
+        <!-- Icono de usuario y menú desplegable -->
         <div class="relative flex items-center border border-gray-300 rounded-full p-1 cursor-pointer">
             <i class="fas fa-bars text-gray-600 px-2"></i>
             <i class="fas fa-user-circle text-gray-600 text-2xl" id="user-icon"></i>
@@ -44,19 +28,19 @@
             <div class="py-2">
                 {% if session.usuario_email and usuario_info %}
                     <p class="px-4 py-2 text-gray-800">Bienvenido, <strong>{{ usuario_info[1] }} {{ usuario_info[2] }}</strong></p>
-                    <a href="{{ url_for('mis_reservas') }}" class="block px-4 py-2 text-gray-800 hover:bg-rose-100 transition duration-200">
+                    <a href="{{ url_for('mis_reservas') }}" class="block px-4 py-2 text-gray-800 hover:bg-purple-100 transition duration-200">
                         <i class="fas fa-calendar-alt mr-2"></i>Mis Reservas
                     </a>
-                    <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-gray-800 hover:bg-rose-100 transition duration-200">Cerrar sesión</a>
+                    <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-gray-800 hover:bg-purple-100 transition duration-200">Cerrar sesión</a>
                 {% elif session.usuario_email %}
                     <p class="px-4 py-2 text-gray-800">Bienvenido, <strong>{{ session.usuario_email }}</strong></p>
-                    <a href="{{ url_for('mis_reservas') }}" class="block px-4 py-2 text-gray-800 hover:bg-rose-100 transition duration-200">
+                    <a href="{{ url_for('mis_reservas') }}" class="block px-4 py-2 text-gray-800 hover:bg-purple-100 transition duration-200">
                         <i class="fas fa-calendar-alt mr-2"></i>Mis Reservas
                     </a>
-                    <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-gray-800 hover:bg-rose-100 transition duration-200">Cerrar sesión</a>
+                    <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-gray-800 hover:bg-purple-100 transition duration-200">Cerrar sesión</a>
                 {% else %}
-                    <a href="{{ url_for('login') }}" class="block px-4 py-2 text-gray-800 hover:bg-rose-100 transition duration-200">Iniciar sesión</a>
-                    <a href="{{ url_for('registro') }}" class="block px-4 py-2 text-gray-800 hover:bg-rose-100 transition duration-200">Registrarse</a>
+                    <a href="{{ url_for('login') }}" class="block px-4 py-2 text-gray-800 hover:bg-purple-100 transition duration-200">Iniciar sesión</a>
+                    <a href="{{ url_for('registro') }}" class="block px-4 py-2 text-gray-800 hover:bg-purple-100 transition duration-200">Registrarse</a>
                 {% endif %}
             </div>
         </div>
@@ -80,7 +64,7 @@
                                 <p class="text-gray-500">{{ alojamiento[2] }}</p>
                             </div>
                             <div class="flex items-center">
-                                <i class="fas fa-star text-sm text-rose-500"></i>
+                                <i class="fas fa-star text-sm text-purple-500"></i>
                                 <span class="ml-1 text-sm">{{ alojamiento[5] }}</span>
                             </div>
                         </div>
