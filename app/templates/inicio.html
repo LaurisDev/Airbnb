@@ -9,44 +9,43 @@
     <link rel="stylesheet" href="static/estilos.css">
     <script src="static/funciones.js" defer></script>
 </head>
-<body class="bg-gray-50">
-    
+<body class="bg-gray-100">
+
     <!-- Barra de navegación -->
-    <nav class="bg-white shadow-sm py-4 px-6 flex justify-between items-center sticky top-0 z-50">
-        <div class="flex justify-between items-center">
-            <span class="ml-2 text-xl font-bold text-purple-500 hidden md:block">Rinconcito</span>
+    <nav class="bg-gradient-to-r from-purple-500 to-purple-700 shadow-lg py-4 px-6 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center">
+            <span class="text-xl font-bold text-white">Rinconcito</span>
         </div>
         
-        
-        <!-- Icono de usuario y menú desplegable -->
+        <!-- Icono de usuario -->
         <div class="relative flex items-center border border-gray-300 rounded-full p-1 cursor-pointer">
-            <i class="fas fa-bars text-gray-600 px-2"></i>
-            <i class="fas fa-user-circle text-gray-600 text-2xl" id="user-icon"></i>
+            <i class="fas fa-user-circle text-white text-2xl" id="user-icon"></i>
 
-        <!-- Dropdown del usuario -->
-        <div class="dropdown absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10" id="user-dropdown">
-            <div class="py-2">
-                {% if session.usuario_email and usuario_info %}
-                    <p class="px-4 py-2 text-gray-800">Bienvenido, <strong>{{ usuario_info[1] }} {{ usuario_info[2] }}</strong></p>
-                    <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-gray-800 hover:bg-purple-100 transition duration-200">Cerrar sesión</a>
-                {% elif session.usuario_email %}
-                    <p class="px-4 py-2 text-gray-800">Bienvenido, <strong>{{ session.usuario_email }}</strong></p>
-                    <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-gray-800 hover:bg-purple-100 transition duration-200">Cerrar sesión</a>
-                {% else %}
-                    <a href="{{ url_for('login') }}" class="block px-4 py-2 text-gray-800 hover:bg-purple-100 transition duration-200">Iniciar sesión</a>
-                    <a href="{{ url_for('registro') }}" class="block px-4 py-2 text-gray-800 hover:bg-purple-100 transition duration-200">Registrarse</a>
-                {% endif %}
+            <!-- Dropdown del usuario -->
+            <div class="dropdown absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10" id="user-dropdown">
+                <div class="py-2">
+                    {% if session.usuario_email and usuario_info %}
+                        <p class="px-4 py-2 text-gray-800">Bienvenido, <strong>{{ usuario_info[1] }} {{ usuario_info[2] }}</strong></p>
+                        <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-gray-800 hover:bg-purple-100 transition duration-200">Cerrar sesión</a>
+                    {% elif session.usuario_email %}
+                        <p class="px-4 py-2 text-gray-800">Bienvenido, <strong>{{ session.usuario_email }}</strong></p>
+                        <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-gray-800 hover:bg-purple-100 transition duration-200">Cerrar sesión</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="block px-4 py-2 text-gray-800 hover:bg-purple-100 transition duration-200">Iniciar sesión</a>
+                        <a href="{{ url_for('registro') }}" class="block px-4 py-2 text-gray-800 hover:bg-purple-100 transition duration-200">Registrarse</a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- Listado de propiedades -->
+    <!-- hospedajes -->
     <div class="container mx-auto px-4 mt-12 mb-16">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">Alojamientos Recomendados</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Alojamientos Recomendados</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
             {% for alojamiento in alojamientos %}
             <a href="/alojamiento/{{ alojamiento[0] }}" class="block">
-                <div class="property-card bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition duration-300 cursor-pointer">
+                <div class="property-card bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition duration-300 cursor-pointer">
                     <div class="relative">
                         <img src="{{ alojamiento[4] }}" alt="{{ alojamiento[1] }}" class="w-full h-48 object-cover">
                         <button class="absolute top-3 right-3 heart-hover" onclick="event.preventDefault(); event.stopPropagation();"></button>
@@ -54,7 +53,7 @@
                     <div class="p-4">
                         <div class="flex justify-between items-start">
                             <div>
-                                <h3 class="font-bold text-lg">{{ alojamiento[1] }}</h3>
+                                <h3 class="font-bold text-lg text-purple-600">{{ alojamiento[1] }}</h3>
                                 <p class="text-gray-500">{{ alojamiento[2] }}</p>
                             </div>
                             <div class="flex items-center">
@@ -71,3 +70,4 @@
     </div>
 </body>
 </html>
+<script>
