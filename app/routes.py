@@ -7,25 +7,8 @@ def init_routes(app):
     
     @app.route("/", methods=["GET", "POST"])
     def inicio():
-        if request.method == "POST":
-            if request.get_json():
-                data = request.get_json()
-                location = data.get("location")
-                checkin = data.get("checkin")
-                checkout = data.get("checkout")
-                guests = data.get("guests")
-            else:
-                location = request.form.get("location")
-                checkin = request.form.get("checkin")
-                checkout = request.form.get("checkout")
-                guests = request.form.get("guests")
+        alojamientos = obtener_alojamientos()
 
-            alojamientos = obtener_alojamientos_filtrados(location, checkin, checkout, guests)
-            return jsonify(alojamientos)
-        else:
-            alojamientos = obtener_alojamientos()
-        
-        # Obtener información del usuario si está logueado
         usuario_info = None
         if 'usuario_email' in session:
             usuario_info = obtener_usuario_por_email(session['usuario_email'])
@@ -37,7 +20,7 @@ def init_routes(app):
     @app.route("/registro", methods=["GET", "POST"])
     def registro():
         if request.method == "POST":
-            nombre = request.form.get("nombre", "").strip()
+            nombre = request.form.get("nombre", "").strip() #Strip elimina espacios al inicio y al final
             apellidos = request.form.get("apellidos", "").strip()
             email = request.form.get("email", "").strip()
             telefono = request.form.get("telefono", "").strip()
