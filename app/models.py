@@ -164,65 +164,9 @@ def verificar_disponibilidad(alojamiento_id, fecha_inicio, fecha_fin):
     conn.close()
     return count == 0
 
-def obtener_reservas_usuario(usuario_id):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("""
-        SELECT r.id, r.fecha_inicio, r.fecha_fin, r.total, r.estado,
-               a.titulo, a.imagen_principal, a.precio_por_noche, a.id as alojamiento_id
-        FROM reservas r
-        JOIN alojamientos a ON r.alojamiento_id = a.id
-        WHERE r.usuario_id = %s
-        ORDER BY r.fecha_inicio DESC
-    """, (usuario_id,))
-    reservas = cur.fetchall()
-    cur.close()
-    conn.close()
-    return reservas
 
-def cancelar_reserva(reserva_id, usuario_id):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    try:
-        # Verificar que la reserva pertenece al usuario
-        cur.execute("""
-            SELECT id FROM reservas 
-            WHERE id = %s AND usuario_id = %s
-        """, (reserva_id, usuario_id))
-        reserva = cur.fetchone()
-        
-        if not reserva:
-            return False
-        
-        # Actualizar el estado de la reserva a cancelada
-        cur.execute("""
-            UPDATE reservas 
-            SET estado = 'cancelada' 
-            WHERE id = %s
-        """, (reserva_id,))
-        conn.commit()
-        return True
-    except Exception as e:
-        conn.rollback()
-        raise e
-    finally:
-        cur.close()
-        conn.close()
 
-def obtener_reserva_por_id(reserva_id, usuario_id):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("""
-        SELECT r.id, r.fecha_inicio, r.fecha_fin, r.total, r.estado,
-               a.titulo, a.imagen_principal, a.precio_por_noche, a.id as alojamiento_id
-        FROM reservas r
-        JOIN alojamientos a ON r.alojamiento_id = a.id
-        WHERE r.id = %s AND r.usuario_id = %s
-    """, (reserva_id, usuario_id))
-    reserva = cur.fetchone()
-    cur.close()
-    conn.close()
-    return reserva
+
 
 def obtener_fechas_disponibles(alojamiento_id):
     conn = get_db_connection()
@@ -246,16 +190,12 @@ def generar_calendario_mes(alojamiento_id):
     from datetime import datetime, date, timedelta
     import calendar
     
-    # Obtener el mes actual
+    # Obtener el año actual
     hoy = date.today()
     año_actual = hoy.year
-    mes_actual = hoy.month
     
     # Obtener las fechas ocupadas
     fechas_ocupadas = obtener_fechas_disponibles(alojamiento_id)
-    
-    # Crear calendario
-    cal = calendar.monthcalendar(año_actual, mes_actual)
     
     # Convertir fechas ocupadas a set para búsqueda rápida
     fechas_ocupadas_set = set()
@@ -265,30 +205,39 @@ def generar_calendario_mes(alojamiento_id):
             fechas_ocupadas_set.add(current_date)
             current_date += timedelta(days=1)
     
-    # Generar días del calendario
-    dias_calendario = []
-    for semana in cal:
-        semana_dias = []
-        for dia in semana:
-            if dia == 0:
-                semana_dias.append(None)  # Día vacío
-            else:
-                fecha_actual = date(año_actual, mes_actual, dia)
-                esta_ocupado = fecha_actual in fechas_ocupadas_set
-                semana_dias.append({
-                    'dia': dia,
-                    'fecha': fecha_actual,
-                    'ocupado': esta_ocupado,
-                    'pasado': fecha_actual < hoy
-                })
-        dias_calendario.append(semana_dias)
+    # Generar calendarios para todos los meses del año
+    calendarios_meses = []
     
-    return {
-        'año': año_actual,
-        'mes': mes_actual,
-        'nombre_mes': calendar.month_name[mes_actual],
-        'dias': dias_calendario
-    }
+    for mes in range(1, 13):
+        # Crear calendario para el mes
+        cal = calendar.monthcalendar(año_actual, mes)
+        
+        # Generar días del calendario
+        dias_calendario = []
+        for semana in cal:
+            semana_dias = []
+            for dia in semana:
+                if dia == 0:
+                    semana_dias.append(None)  # Día vacío
+                else:
+                    fecha_actual = date(año_actual, mes, dia)
+                    esta_ocupado = fecha_actual in fechas_ocupadas_set
+                    semana_dias.append({
+                        'dia': dia,
+                        'fecha': fecha_actual,
+                        'ocupado': esta_ocupado,
+                        'pasado': fecha_actual < hoy
+                    })
+            dias_calendario.append(semana_dias)
+        
+        calendarios_meses.append({
+            'año': año_actual,
+            'mes': mes,
+            'nombre_mes': calendar.month_name[mes],
+            'dias': dias_calendario
+        })
+    
+    return calendarios_meses
 
 
 

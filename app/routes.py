@@ -145,9 +145,9 @@ def init_routes(app):
         if 'usuario_email' in session:
             usuario_info = obtener_usuario_por_email(session['usuario_email'])
         
-        # Obtener calendario del mes
+        # Obtener calendarios de todos los meses
         from app.models import generar_calendario_mes
-        calendario = generar_calendario_mes(alojamiento_id)
+        calendarios = generar_calendario_mes(alojamiento_id)
         
         return render_template("detalle_alojamiento.html", 
                              alojamiento=alojamiento, 
@@ -157,7 +157,7 @@ def init_routes(app):
                              resenas=resenas,
                              usuario_logueado=usuario_logueado,
                              usuario_info=usuario_info,
-                             calendario=calendario)
+                             calendarios=calendarios)
 
     @app.route("/alojamiento/<int:alojamiento_id>/resena", methods=["POST"])
     def agregar_resena_alojamiento(alojamiento_id):
@@ -237,7 +237,15 @@ def init_routes(app):
         if 'usuario_email' not in session:
             flash("Debes iniciar sesión para realizar una reserva.", "error")
             return redirect(url_for('login', next=request.url))
-                
+        
+        # Obtener información del alojamiento
+        alojamiento = obtener_alojamiento_por_id(alojamiento_id)
+        if alojamiento is None:
+            flash("Alojamiento no encontrado", "error")
+            return redirect(url_for('inicio'))
+        
+        # Obtener información del usuario
+        usuario_info = obtener_usuario_por_email(session['usuario_email'])
         
         if request.method == "POST":
             checkin = request.form.get("checkin")
@@ -247,56 +255,100 @@ def init_routes(app):
             # Validar que todos los campos estén presentes
             if not checkin or not checkout or not guests:
                 flash("Debes completar todos los campos de la reserva.", "error")
-                return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+                return render_template("resumen_reserva.html", 
+                                     alojamiento=alojamiento,
+                                     checkin=checkin or "",
+                                     checkout=checkout or "",
+                                     guests=guests or "",
+                                     noches=0,
+                                     precio_por_noche=alojamiento[3],
+                                     precio_total=0,
+                                     usuario_info=usuario_info)
             
-            # Obtener información del alojamiento
-            alojamiento = obtener_alojamiento_por_id(alojamiento_id)
-            if alojamiento is None:
-                flash("Alojamiento no encontrado", "error")
-                return redirect(url_for('inicio'))
-            
-            # Calcular el número de noches
-            fecha_checkin = datetime.strptime(checkin, '%Y-%m-%d')
-            fecha_checkout = datetime.strptime(checkout, '%Y-%m-%d')
-            fecha_actual = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-            
-            # Validar que las fechas no sean pasadas
-            if fecha_checkin < fecha_actual:
-                flash("No puedes seleccionar una fecha de check-in en el pasado. Por favor, selecciona una fecha futura.", "error")
-                return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
-            
-            if fecha_checkout < fecha_actual:
-                flash("No puedes seleccionar una fecha de check-out en el pasado. Por favor, selecciona una fecha futura.", "error")
-                return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
-            
-            noches = (fecha_checkout - fecha_checkin).days
-            
-            if noches <= 0:
-                flash("La fecha de check-out debe ser posterior al check-in.", "error")
-                return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
-            
-            # Validar capacidad del alojamiento
-            capacidad_alojamiento = alojamiento[6]  # alojamiento[6] es la capacidad
-            if int(guests) > capacidad_alojamiento:
-                flash(f"Lo sentimos, este alojamiento solo puede alojar hasta {capacidad_alojamiento} huésped{'es' if capacidad_alojamiento > 1 else ''}.", "error")
-                return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
-            
-            # Calcular el precio total
-            precio_por_noche = alojamiento[3]
-            precio_total = precio_por_noche * noches
-            
-            # Obtener información del usuario
-            usuario_info = obtener_usuario_por_email(session['usuario_email'])
-            
-            return render_template("resumen_reserva.html", 
-                                 alojamiento=alojamiento,
-                                 checkin=checkin,
-                                 checkout=checkout,
-                                 guests=guests,
-                                 noches=noches,
-                                 precio_por_noche=precio_por_noche,
-                                 precio_total=precio_total,
-                                 usuario_info=usuario_info)
+            try:
+                # Calcular el número de noches
+                fecha_checkin = datetime.strptime(checkin, '%Y-%m-%d')
+                fecha_checkout = datetime.strptime(checkout, '%Y-%m-%d')
+                fecha_actual = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                
+                # Validar que las fechas no sean pasadas
+                if fecha_checkin < fecha_actual:
+                    flash("No puedes seleccionar una fecha de check-in en el pasado. Por favor, selecciona una fecha futura.", "error")
+                    return render_template("resumen_reserva.html", 
+                                         alojamiento=alojamiento,
+                                         checkin=checkin,
+                                         checkout=checkout,
+                                         guests=guests,
+                                         noches=0,
+                                         precio_por_noche=alojamiento[3],
+                                         precio_total=0,
+                                         usuario_info=usuario_info)
+                
+                if fecha_checkout < fecha_actual:
+                    flash("No puedes seleccionar una fecha de check-out en el pasado. Por favor, selecciona una fecha futura.", "error")
+                    return render_template("resumen_reserva.html", 
+                                         alojamiento=alojamiento,
+                                         checkin=checkin,
+                                         checkout=checkout,
+                                         guests=guests,
+                                         noches=0,
+                                         precio_por_noche=alojamiento[3],
+                                         precio_total=0,
+                                         usuario_info=usuario_info)
+                
+                noches = (fecha_checkout - fecha_checkin).days
+                
+                if noches <= 0:
+                    flash("La fecha de check-out debe ser posterior al check-in.", "error")
+                    return render_template("resumen_reserva.html", 
+                                         alojamiento=alojamiento,
+                                         checkin=checkin,
+                                         checkout=checkout,
+                                         guests=guests,
+                                         noches=0,
+                                         precio_por_noche=alojamiento[3],
+                                         precio_total=0,
+                                         usuario_info=usuario_info)
+                
+                # Validar capacidad del alojamiento
+                capacidad_alojamiento = alojamiento[6]  # alojamiento[6] es la capacidad
+                if int(guests) > capacidad_alojamiento:
+                    flash(f"Lo sentimos, este alojamiento solo puede alojar hasta {capacidad_alojamiento} huésped{'es' if capacidad_alojamiento > 1 else ''}.", "error")
+                    return render_template("resumen_reserva.html", 
+                                         alojamiento=alojamiento,
+                                         checkin=checkin,
+                                         checkout=checkout,
+                                         guests=guests,
+                                         noches=0,
+                                         precio_por_noche=alojamiento[3],
+                                         precio_total=0,
+                                         usuario_info=usuario_info)
+                
+                # Calcular el precio total
+                precio_por_noche = alojamiento[3]
+                precio_total = precio_por_noche * noches
+                
+                return render_template("resumen_reserva.html", 
+                                     alojamiento=alojamiento,
+                                     checkin=checkin,
+                                     checkout=checkout,
+                                     guests=guests,
+                                     noches=noches,
+                                     precio_por_noche=precio_por_noche,
+                                     precio_total=precio_total,
+                                     usuario_info=usuario_info)
+                                     
+            except ValueError:
+                flash("Formato de fecha inválido. Por favor, selecciona fechas válidas.", "error")
+                return render_template("resumen_reserva.html", 
+                                     alojamiento=alojamiento,
+                                     checkin=checkin or "",
+                                     checkout=checkout or "",
+                                     guests=guests or "",
+                                     noches=0,
+                                     precio_por_noche=alojamiento[3],
+                                     precio_total=0,
+                                     usuario_info=usuario_info)
         
         # Si es GET, redirigir al detalle del alojamiento
         return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
@@ -333,11 +385,11 @@ def init_routes(app):
         # Validar que las fechas no sean pasadas
         if fecha_checkin < fecha_actual:
             flash("No puedes seleccionar una fecha de check-in en el pasado. Por favor, selecciona una fecha futura.", "error")
-            return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+            return redirect(url_for('resumen_reserva', alojamiento_id=alojamiento_id))
         
         if fecha_checkout < fecha_actual:
             flash("No puedes seleccionar una fecha de check-out en el pasado. Por favor, selecciona una fecha futura.", "error")
-            return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+            return redirect(url_for('resumen_reserva', alojamiento_id=alojamiento_id))
         
         noches = (fecha_checkout - fecha_checkin).days
         precio_total = alojamiento[3] * noches
@@ -346,18 +398,18 @@ def init_routes(app):
         capacidad_alojamiento = alojamiento[6]  # alojamiento[6] es la capacidad
         if int(guests) > capacidad_alojamiento:
             flash(f"Lo sentimos, este alojamiento solo puede alojar hasta {capacidad_alojamiento} huésped{'es' if capacidad_alojamiento > 1 else ''}.", "error")
-            return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+            return redirect(url_for('resumen_reserva', alojamiento_id=alojamiento_id))
         
         # Verificar disponibilidad
         if not verificar_disponibilidad(alojamiento_id, checkin, checkout):
             flash("Lo sentimos, el alojamiento no está disponible para las fechas seleccionadas.", "error")
-            return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+            return redirect(url_for('resumen_reserva', alojamiento_id=alojamiento_id))
         
         # Obtener el ID del usuario
         usuario = obtener_usuario_por_email(session['usuario_email'])
         if not usuario:
             flash("Error al obtener información del usuario.", "error")
-            return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+            return redirect(url_for('resumen_reserva', alojamiento_id=alojamiento_id))
         
         usuario_id = usuario[0]
         
@@ -382,7 +434,7 @@ def init_routes(app):
             
         except Exception as e:
             flash("Error al procesar la reserva. Por favor, intenta nuevamente.", "error")
-            return redirect(url_for('detalle_alojamiento', alojamiento_id=alojamiento_id))
+            return redirect(url_for('resumen_reserva', alojamiento_id=alojamiento_id))
 
     @app.route("/reserva/<int:reserva_id>/confirmacion")
     def confirmacion_reserva(reserva_id):
@@ -412,49 +464,6 @@ def init_routes(app):
                              precio_total=reserva_data.get('precio_total'),
                              usuario_info=usuario_info)
 
-    @app.route("/mis-reservas")
-    def mis_reservas():
-        # Verificar si el usuario está logueado
-        if 'usuario_email' not in session:
-            flash("Debes iniciar sesión para ver tus reservas.", "error")
-            return redirect(url_for('login'))
-        
-        # Obtener el ID del usuario
-        usuario = obtener_usuario_por_email(session['usuario_email'])
-        if not usuario:
-            flash("Error al obtener información del usuario.", "error")
-            return redirect(url_for('inicio'))
-        
-        usuario_id = usuario[0]
-        
-        # Obtener las reservas del usuario
-        from app.models import obtener_reservas_usuario
-        reservas = obtener_reservas_usuario(usuario_id)
-        
-        return render_template("mis_reservas.html", reservas=reservas, usuario_info=usuario)
 
-    @app.route("/cancelar-reserva/<int:reserva_id>", methods=["POST"])
-    def cancelar_reserva_route(reserva_id):
-        # Verificar si el usuario está logueado
-        if 'usuario_email' not in session:
-            flash("Debes iniciar sesión para cancelar reservas.", "error")
-            return redirect(url_for('login'))
-        
-        # Obtener el ID del usuario
-        usuario = obtener_usuario_por_email(session['usuario_email'])
-        if not usuario:
-            flash("Error al obtener información del usuario.", "error")
-            return redirect(url_for('inicio'))
-        
-        usuario_id = usuario[0]
-        
-        # Cancelar la reserva
-        from app.models import cancelar_reserva
-        if cancelar_reserva(reserva_id, usuario_id):
-            flash("Reserva cancelada exitosamente.", "success_reservas")
-        else:
-            flash("No se pudo cancelar la reserva. Verifica que la reserva te pertenezca.", "error_reservas")
-        
-        return redirect(url_for('mis_reservas'))
    
   

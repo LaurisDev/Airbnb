@@ -54,39 +54,60 @@
 
                     <!-- Calendario de Disponibilidad -->
                     <div class="mt-6 pt-6 border-t border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Disponibilidad - {{ calendario.nombre_mes }} {{ calendario.año }}</h3>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Disponibilidad - Año {{ calendarios[0].año }}</h3>
+                        
+                        <!-- Navegación de meses -->
+                        <div class="flex items-center justify-between mb-4">
+                            <button id="prev-month" class="text-purple-500 hover:text-purple-700 transition duration-200">
+                                <i class="fas fa-chevron-left mr-2"></i>Mes anterior
+                            </button>
+                            <span id="current-month" class="text-lg font-semibold text-gray-800">{{ calendarios[0].nombre_mes }}</span>
+                            <button id="next-month" class="text-purple-500 hover:text-purple-700 transition duration-200">
+                                Mes siguiente<i class="fas fa-chevron-right ml-2"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Contenedor de calendarios -->
                         <div class="bg-gray-50 rounded-lg p-4">
-                            <!-- Días de la semana -->
-                            <div class="grid grid-cols-7 gap-1 mb-2">
-                                <div class="text-center text-sm font-semibold text-gray-600 py-2">Dom</div>
-                                <div class="text-center text-sm font-semibold text-gray-600 py-2">Lun</div>
-                                <div class="text-center text-sm font-semibold text-gray-600 py-2">Mar</div>
-                                <div class="text-center text-sm font-semibold text-gray-600 py-2">Mié</div>
-                                <div class="text-center text-sm font-semibold text-gray-600 py-2">Jue</div>
-                                <div class="text-center text-sm font-semibold text-gray-600 py-2">Vie</div>
-                                <div class="text-center text-sm font-semibold text-gray-600 py-2">Sáb</div>
-                            </div>
-                            
-                            <!-- Días del calendario -->
-                            {% for semana in calendario.dias %}
-                                <div class="grid grid-cols-7 gap-1">
-                                    {% for dia in semana %}
-                                        {% if dia is none %}
-                                            <div class="py-2"></div>
-                                        {% else %}
-                                            <div class="py-2 px-1 text-center text-sm rounded
-                                                {% if dia.pasado %}
-                                                    bg-gray-100 text-gray-400
-                                                {% elif dia.ocupado %}
-                                                    bg-red-100 text-red-800 font-medium
-                                                {% else %}
-                                                    bg-green-100 text-green-800 font-medium
-                                                {% endif %}">
-                                                {{ dia.dia }}
-                                            </div>
-                                        {% endif %}
-                                    {% endfor %}
+                            {% for calendario in calendarios %}
+                            <div class="calendario-mes {% if loop.index0 == 0 %}active{% endif %}" data-mes="{{ loop.index0 }}">
+                                <div class="text-center mb-3">
+                                    <h4 class="text-lg font-semibold text-gray-800">{{ calendario.nombre_mes }} {{ calendario.año }}</h4>
                                 </div>
+                                
+                                <!-- Días de la semana -->
+                                <div class="grid grid-cols-7 gap-1 mb-2">
+                                    <div class="text-center text-sm font-semibold text-gray-600 py-2">Dom</div>
+                                    <div class="text-center text-sm font-semibold text-gray-600 py-2">Lun</div>
+                                    <div class="text-center text-sm font-semibold text-gray-600 py-2">Mar</div>
+                                    <div class="text-center text-sm font-semibold text-gray-600 py-2">Mié</div>
+                                    <div class="text-center text-sm font-semibold text-gray-600 py-2">Jue</div>
+                                    <div class="text-center text-sm font-semibold text-gray-600 py-2">Vie</div>
+                                    <div class="text-center text-sm font-semibold text-gray-600 py-2">Sáb</div>
+                                </div>
+                                
+                                <!-- Días del calendario -->
+                                {% for semana in calendario.dias %}
+                                    <div class="grid grid-cols-7 gap-1">
+                                        {% for dia in semana %}
+                                            {% if dia is none %}
+                                                <div class="py-2"></div>
+                                            {% else %}
+                                                <div class="py-2 px-1 text-center text-sm rounded
+                                                    {% if dia.pasado %}
+                                                        bg-gray-100 text-gray-400
+                                                    {% elif dia.ocupado %}
+                                                        bg-red-100 text-red-800 font-medium
+                                                    {% else %}
+                                                        bg-green-100 text-green-800 font-medium
+                                                    {% endif %}">
+                                                    {{ dia.dia }}
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% endfor %}
+                            </div>
                             {% endfor %}
                             
                             <!-- Leyenda -->
@@ -246,6 +267,16 @@
             </div>
         </div>
     </div>
+<style>
+    .calendario-mes {
+        display: none;
+    }
+    
+    .calendario-mes.active {
+        display: block;
+    }
+</style>
+
 <script>
     // Función para calcular el precio total de la reserva
 
@@ -280,8 +311,65 @@ function initPriceCalculation(pricePerNight) {
         calculateTotal(); 
     }
 }
+
     document.addEventListener('DOMContentLoaded', function () {
         initPriceCalculation(parseFloat("{{ alojamiento[3] }}"));
+        
+        // Navegación del calendario
+        const calendarios = document.querySelectorAll('.calendario-mes');
+        const prevBtn = document.getElementById('prev-month');
+        const nextBtn = document.getElementById('next-month');
+        const currentMonthSpan = document.getElementById('current-month');
+        let currentMonthIndex = 0;
+        
+        const nombresMeses = [
+            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+        
+        function showMonth(index) {
+            // Ocultar todos los calendarios
+            calendarios.forEach(cal => cal.classList.remove('active'));
+            
+            // Mostrar el calendario actual
+            if (calendarios[index]) {
+                calendarios[index].classList.add('active');
+                currentMonthSpan.textContent = nombresMeses[index];
+            }
+            
+            // Actualizar estado de los botones
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === calendarios.length - 1;
+            
+            prevBtn.style.opacity = index === 0 ? '0.5' : '1';
+            nextBtn.style.opacity = index === calendarios.length - 1 ? '0.5' : '1';
+        }
+        
+        if (prevBtn && nextBtn) {
+            prevBtn.addEventListener('click', function() {
+                if (currentMonthIndex > 0) {
+                    currentMonthIndex--;
+                    showMonth(currentMonthIndex);
+                }
+            });
+            
+            nextBtn.addEventListener('click', function() {
+                if (currentMonthIndex < calendarios.length - 1) {
+                    currentMonthIndex++;
+                    showMonth(currentMonthIndex);
+                }
+            });
+            
+                    // Inicializar con el mes actual
+        const mesActual = new Date().getMonth();
+        currentMonthIndex = mesActual;
+        showMonth(currentMonthIndex);
+        
+        // Asegurar que el primer calendario esté visible inicialmente
+        if (calendarios.length > 0) {
+            calendarios[0].classList.add('active');
+        }
+        }
         
         // Validación de capacidad de huéspedes
         const guestsSelect = document.getElementById('guests');
